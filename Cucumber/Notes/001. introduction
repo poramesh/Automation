@@ -1,0 +1,153 @@
+Introduction to Cucumber BDD with Python 
+
+Cucumber is a Behavior-Driven Development (BDD) framework , which is an extension of  Test-Driven Development (TDD) . It enables stakeholders, business analysts, developers, and 
+QA engineers to collaborate efficiently by writing test scenarios in plain English. This makes it easier for non-technical stakeholders
+to understand the test cases and ensures everyone is on the same page.
+
+This tutorial introduces  Cucumber BDD with Python , covering its purpose, advantages, and basic syntax.
+
+---
+
+Why Use Cucumber BDD Framework?
+In the software testing landscape, various frameworks exist, such as:
+-  Keyword-Driven Framework 
+-  Data-Driven Framework 
+-  Hybrid Framework 
+-  Cucumber BDD Framework 
+
+Each of these frameworks serves different purposes. However, the Cucumber BDD framework is particularly useful because it allows writing test 
+cases in  plain English  using the  Gherkin language .
+
+This means that:
+-  Stakeholders (BAs, Product Owners, etc.) can easily understand the test cases .
+-  Developers and QA Engineers can work on automation in parallel .
+-  Automation scripts are more readable and maintainable .
+-  Test cases become reusable and modular .
+
+---
+
+How Traditional Frameworks Work
+In traditional frameworks like  Keyword-Driven, Data-Driven, and Hybrid frameworks , test data is stored in external files such as:
+- Excel Sheets
+- JSON Files
+- YAML Files
+
+These frameworks rely heavily on scripting, which makes them difficult for non-technical members to understand. Test execution involves looping
+through data, validating inputs, and verifying outputs, making it complex for business stakeholders to interpret the test logic.
+
+---
+
+The Cucumber BDD Approach
+Cucumber BDD simplifies test automation by writing test scenarios in  plain English . Here’s how it works:
+1.  Feature File:  Test cases are written in a `.feature` file using the Gherkin language.
+2.  Steps Definition:  Each step in the feature file is mapped to a Python function.
+3.  Execution:  The test framework executes these steps using a BDD test runner.
+
+---
+
+Key Components of Cucumber BDD
+
+1. Feature File 
+A  feature file  contains high-level test case descriptions.
+
+ Example: 
+gherkin
+Feature: Login Functionality
+  Scenario: Successful login with valid credentials
+    Given the user is on the login page
+    When the user enters a valid username and password
+    Then the user should be redirected to the homepage
+
+```
+
+-  Feature:  Describes the overall functionality being tested.
+-  Scenario:  Defines a specific test case.
+-  Given:  Sets up preconditions.
+-  When:  Describes actions performed by the user.
+-  Then:  Defines expected outcomes.
+
+---
+
+2. Step Definitions 
+Each step in the feature file needs to be implemented in Python. This is done using  Step Definition files .
+
+Example (Python Code): 
+
+from behave import given, when, then
+
+@given('the user is on the login page')
+def step_impl(context):
+    context.driver.get("https://example.com/login")
+
+@when('the user enters a valid username and password')
+def step_impl(context):
+    context.driver.find_element_by_id("username").send_keys("testuser")
+    context.driver.find_element_by_id("password").send_keys("password123")
+    context.driver.find_element_by_id("login").click()
+
+@then('the user should be redirected to the homepage')
+def step_impl(context):
+    assert context.driver.current_url == "https://example.com/home"
+```
+
+This structure ensures that:
+- Each  Given, When, Then  step is mapped to a Python function.
+- Test cases remain  understandable and maintainable .
+- Automation scripts align with business requirements.
+
+---
+
+Advantages of Cucumber BDD Framework 
+1.  Brings Stakeholders, Developers, and QA on the Same Page 
+   - Stakeholders can read and understand test cases.
+   - QA Engineers can automate using predefined steps.
+   - Developers can implement the necessary functionality based on BDD scenarios.
+
+2.  Uses Simple English Language (Gherkin) 
+   - No programming knowledge is needed to understand feature files.
+   - Easier collaboration between technical and non-technical teams.
+
+3.  More Reusable and Modular Tests 
+   - Steps can be reused across multiple scenarios.
+   - Reduces duplication in test automation.
+
+4.  Minimal Impact on Changes 
+   - If business requirements change, only the feature file needs to be updated.
+   - Step definitions can remain unchanged if underlying logic is intact.
+
+---
+
+Cucumber BDD Framework Syntax 
+Cucumber uses the  Gherkin  language, which follows a specific structure:
+
+Basic Syntax: 
+```gherkin
+Feature: [Feature Name]
+  Scenario: [Scenario Name]
+    Given [Precondition]
+    When [Action]
+    Then [Expected Outcome]
+```
+
+Example: 
+
+```
+Feature: User Authentication
+
+  Scenario: Login with valid credentials
+    Given the user is on the login page
+    When the user enters a valid username and password
+    Then the user should be redirected to the homepage
+```
+
+Key Terms in Cucumber BDD 
+| Keyword    | Purpose |
+|------------|---------|
+|  Feature   | Describes high-level test functionality |
+|  Scenario  | Represents a specific test case |
+|  Given     | Describes preconditions (e.g., opening a browser) |
+|  When      | Defines actions performed by the user |
+|  Then      | Specifies expected outcomes or validations |
+
+---
+
