@@ -1,0 +1,439 @@
+create a folder.
+create a virtual environment => py -3 -m venv myenv
+activate the eenviroment => myenv\Scripts\activate
+and now install selenium => pip install selenium
+install behavae => pip install behave
+
+and now get started with adding the files=> create a feature folder and then create login.feature file and add the below content
+
+Feature: Login functionality for an application
+
+  Scenario: Valid user name and password
+    Given open browser
+    When providing valid username and password
+    Then verifying homepage
+
+
+and when you run behave feature\login.feature
+it will show this results:
+
+Feature: Login functionality for an application # features/login.feature:1
+
+  Scenario: Valid user naMCe and password       # features/login.feature:3
+    Given open browser                         # None
+    When providing valid username and password # None
+    Then verifying homepage                    # None
+
+
+Failing scenarios:
+  features/login.feature:3  Valid user nane and password
+
+0 features passed, 1 failed, 0 skipped
+0 scenarios passed, 1 failed, 0 skipped
+0 steps passed, 0 failed, 0 skipped, 3 undefined
+Took 0m0.000s
+
+You can implement step definitions for undefined steps with these snippets:
+
+@given(u'open browser')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Given open browser')
+
+
+@when(u'providing valid username and password')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: When providing valid username and password')
+
+
+@then(u'verifying homepage')
+def step_impl(context):
+    raise NotImplementedError(u'STEP: Then verifying homepage')
+
+
+
+
+in the features\step\login.py
+
+import time
+from behave import given, when, then
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+
+@given(u'open browser')
+def open_browser(context):
+    context.driver = webdriver.Chrome()
+    context.driver.get("https://www.skyscanner.net/")
+    time.sleep(50)
+
+
+@when(u'providing valid username and password')
+def valid_user_password(context):
+    context.driver.find_element(By.XPATH, "//*[@id='originInput-label']").send_keys("london")
+    context.driver.find_element(By.XPATH, "//*[@id='destinationInput-input']").send_keys("bangalore")
+
+
+@then(u'verifying homepage')
+def verify_homepage(context):
+    print("Monkeys")
+
+
+
+this will run 
+
+
+
+-------
+
+
+step parameter and scenario outline
+
+in the above example we have hard coded the value and now we shall send it as a parameter from the feature file.
+
+
+\features\login.feature
+
+Feature: Login functionality for an application
+
+  Scenario: Valid user name and password
+    Given open browser
+    When providing valid "username" and "password"
+    Then verifying homepage
+
+
+  Scenario Outline: 
+    Given open browser
+    When providing valid "<username>" and "<password>"
+    Then verify success message
+    Examples:
+      | username  | password  |
+      | merir     | mercury   |
+      | vebnus    | venus     |
+
+
+
+
+features\step\login.py
+
+import time
+from behave import given, when, then
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+
+
+@given(u'open browser')
+def open_browser(context):
+    context.driver = webdriver.Chrome()
+    context.driver.get("https://www.skyscanner.net/")
+    time.sleep(50)
+
+
+@when(u'providing valid "{username}" and "{password}"')
+def valid_user_password(context,username, password):
+    context.driver.find_element(By.XPATH, "//*[@id='originInput-label']").send_keys("london")
+    context.driver.find_element(By.XPATH, "//*[@id='destinationInput-input']").send_keys("bangalore")
+
+
+@then(u'verifying homepage')
+def verify_homepage(context):
+    assert context.driver.title == "Login: Mercury Tours"
+
+@then('verify success message')
+def verify_success(context):
+    try:
+        text = context.driver.find_element(By.XPATH,"something").text()
+    except:
+        context.driver.close()
+        assert false, "test case failed"
+
+    if text == "login succesful":
+       context.driver.close()
+       assert True, "Test case pass"
+
+-------------------------
+
+
+Tags in selenium 
+
+Purpose of Tags in Selenium Python
+Tags help in filtering which test cases should run.
+
+Examples:
+Run only specific tests (e.g., smoke tests).
+Exclude certain tests.
+Run multiple tagged scenarios together.
+
+
+Tags are defined in .feature files using @tagname, example in gherkin lang:
+
+@smoke
+Scenario: Verify login functionality
+  Given user is on login page
+  When user enters valid credentials
+  Then user should be logged in successfully
+
+@regression
+Scenario: Verify password reset
+  Given user is on forgot password page
+  When user enters valid email
+  Then user should receive a password reset link
+
+
+Running Scenarios Using Tags
+
+behave -i myfeature.feature --tags=smoke  //Runs only scenarios tagged with @smoke.
+behave --tags=smoke,regression //Run multiple tagged scenarios
+behave --tags=~smoke //Exclude a tag using ~ (tilde operator)
+behave features/   //Running All Feature Files in a Directory
+behave features/ --tags=smoke  //Runs all scenarios tagged with @smoke across all feature files.
+
+
+
+ Important Notes
+✅ If you add a tag at the top of a feature file, it applies to all scenarios inside it.
+✅ If a tag is applied to a specific scenario, it only affects that scenario.
+✅ Avoid spaces after commas in --tags=smoke,regression.
+
+
+
+
+-----------
+
+
+Table Format Data in Selenium Python (BDD with Behave)
+
+Table format is used to pass multiple sets of data into a scenario.
+Unlike Scenario Outline (which works only with Examples:), table format can be used anywhere in a feature file.
+Useful when you need to pass data dynamically at different steps.
+
+
+Difference Between Table Format & Scenario Outline
+
+Feature	                                            Scenario Outline	  Table Format
+Uses Examples: section	                            Yes	                No
+Can be used anywhere in a scenario	                No	                Yes
+Used for multiple test cases in a structured way	  Yes	                Yes
+Can pass data dynamically within a step	            No	                Yes
+
+
+
+Example of Table Format in a Feature File
+
+Feature: Login Functionality
+
+  Scenario: Verify login using table format
+    Given user is on login page
+    When user enters credentials
+      | username | password  |
+      | testuser | pass123   |
+      | admin    | admin@123 |
+    Then login should be successful
+
+
+Step Definition for Table Format
+
+from behave import given, when, then
+
+@when('user enters credentials')
+def enter_credentials(context):
+    for row in context.table:
+        username = row['username']
+        password = row['password']
+        print(f"Logging in with {username} and {password}")
+        context.driver.find_element(By.NAME, "username").sendKeys(row['username'])
+
+
+context.table stores the data from the table.
+for row in context.table iterates through each row.
+row['username'] & row['password'] extract data.
+
+
+
+Running Table Format Scenarios
+
+To execute only this scenario, run:
+behave -i login.feature --tags=setup_table //Uses the @setup_table tag to filter execution.
+
+
+Benefits of Table Format
+Can be used in any step (Given, When, Then).
+Works well for dynamic test data.
+Reduces the need for multiple Scenario Outline steps.
+Supports both positive & negative test cases by changing values.
+
+
+Summary
+Table format helps in passing dynamic test data within a scenario.
+It is different from Scenario Outline as it can be used anywhere.
+Step definition uses context.table to access table values.
+Useful for handling varied data sets, API filters, and form validations.
+
+
+
+
+
+-----------
+
+
+BACKGROUND
+
+Background is used to define common steps that should be executed before each scenario in a feature file.
+It helps avoid repetition of setup steps across multiple scenarios.
+Example:
+Opening the browser
+Logging into an application
+Navigating to a specific page
+
+How Background Works?
+Any steps defined inside Background: will be executed before every scenario in the feature file.
+It is not a scenario itself but serves as a precondition for scenarios.
+Saves time by reducing duplicate code.
+
+Example of Background in a Feature File
+
+Feature: Login Feature
+
+  Background:
+    Given user opens the browser
+    And navigates to the login page
+
+  Scenario: Successful Login
+    When user enters valid credentials
+    Then user should be logged in
+
+  Scenario: Failed Login
+    When user enters invalid credentials
+    Then user should see an error message
+
+Steps in Background will execute before every scenario.
+Both scenarios will reuse the same browser setup and navigation.
+
+
+Step Definition for Background
+
+from behave import given, when, then
+
+@given("user opens the browser")
+def open_browser(context):
+    print("Opening the browser")
+
+@given("navigates to the login page")
+def navigate_to_login(context):
+    print("Navigating to login page")
+
+@when("user enters valid credentials")
+def enter_valid_credentials(context):
+    print("Entering valid credentials")
+
+@when("user enters invalid credentials")
+def enter_invalid_credentials(context):
+    print("Entering invalid credentials")
+
+@then("user should be logged in")
+def verify_login(context):
+    print("User logged in successfully")
+
+@then("user should see an error message")
+def verify_error_message(context):
+    print("User sees error message")
+
+
+Running Tests with Background
+
+When executing the feature file:
+Background: steps will run before every scenario
+
+Example Output:
+Opening the browser
+Navigating to login page
+Entering valid credentials
+User logged in successfully
+
+Opening the browser
+Navigating to login page
+Entering invalid credentials
+User sees error message
+
+
+Benefits of Using Background
+Avoids duplicate code in multiple scenarios
+Improves readability of feature files
+Ensures consistent preconditions for all scenarios
+
+
+Summary
+Background is used for common steps before each scenario.
+Helps reduce redundancy in feature files.
+Runs before every scenario automatically.
+Example: Opening browser, navigating to login page, etc.
+Improves test structure and efficiency.
+
+
+
+
+---------------
+
+
+Allure Report
+
+Allure Reports are used for test result visualization in a graphical format.
+It helps to generate detailed test execution reports, including:
+Passed/Failed test cases
+Execution time
+Logs and history
+Compared to pytest-html, Allure provides better integration with Behave.
+
+
+Installation of Allure for Behave in Python
+
+Step 1: Install the Allure Plugin for Behave
+pip install allure-behave
+Open Command Prompt (CMD) and type the above command.
+This installs the necessary Allure plugin for Behave.
+
+Step 2: Verify Installation
+Open Python Interpreter Settings in your IDE (PyCharm, VS Code, etc.)
+Search for allure-behave and check if it is installed.
+
+Running Tests with Allure Report
+
+Execute Tests & Generate Allure Reports
+
+Use the following command to run Behave tests with Allure reporting:
+behave -f allure_behave.formatter:AllureFormatter -o reports/ feature_files/
+
+Command Breakdown:
+-f allure_behave.formatter:AllureFormatter → Uses Allure as the test formatter.
+-o reports/ → Stores the report files in the reports/ folder.
+feature_files/ → Runs all feature files.
+
+
+Viewing the Allure Report
+Step 1: Start the Allure Server
+To view the generated report, run:
+
+allure serve reports/
+
+This launches a web-based report in the browser.
+The report shows:
+Passed & Failed tests
+Execution Time
+Step-by-step logs
+
+
+
+ Benefits of Using Allure Reports
+✔ Better visualization of test results.
+✔ Shows test execution time with detailed logs.
+✔ Works with Behave BDD, Selenium & Python.
+✔ Easy to generate and share reports.
+
+Summary
+Install Allure: pip install allure-behave
+Run Tests with Allure Format: behave -f allure_behave.formatter:AllureFormatter -o reports/ feature_files/
+View Report in Browser: allure serve reports/
+Fix PowerShell Errors if needed.
+
+
