@@ -1,11 +1,12 @@
 ## Overview
 
-This project uses Selenium WebDriver with Behave (Cucumber-style BDD framework for Python) to automate web application testing. It follows the Page Object Model (POM) design pattern to enhance maintainability, reusability, and readability of test scripts.
+This project utilizes Selenium WebDriver with Behave (a Cucumber-style BDD framework for Python) to automate testing of the Emirates webpage, which is a dynamic web application.
+Since the webpage content updates dynamically, this framework makes use of XPath axes to accurately locate and interact with elements that might shift or change. By leveraging advanced XPath techniques, the tests ensure robustness and reliability in element selection, even when the webpage structure evolves.
 
-
-- *Selenium WebDriver* is a powerful browser automation tool that allows testers to simulate real user interactions with web applications, such as clicking buttons, entering text, and navigating between pages.
-- *Behave* follows a Gherkin syntax (Given-When-Then) that allows test cases to be written in a human-readable format. This makes it easier for teams (QA, developers, and business stakeholders) to collaborate on test cases.
-- *POM* is a design pattern that helps organize test scripts by separating test logic from UI interactions. Each webpage is represented as a Python class, 
+Additionally, the framework follows the Page Object Model (POM) design pattern to improve:
+Maintainability – Any UI changes require updates only in one place.
+Reusability – The same page objects can be used across multiple tests.
+Readability – Tests are structured clearly, making it easy for developers and testers to understand.
 
 ## Prerequisites
 
