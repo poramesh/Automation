@@ -21,7 +21,8 @@ pip install -r requirements.txt
 
 ## Project Structure
 
-``` selenium-cucumber-python/
+```
+selenium-cucumber-python/
 │── features/            
 │   ├── search_flight.feature     
 │── pages/                # Page Object Model (POM) classes
@@ -31,8 +32,8 @@ pip install -r requirements.txt
 │──steps
 │   ├──search_flight_steps.py
 │── requirements.txt      # Python dependencies
-│── README.md ``` 
-
+│── README.md 
+```
 
 ## Running Tests
 
