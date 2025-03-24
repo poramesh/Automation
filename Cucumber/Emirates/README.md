@@ -17,12 +17,12 @@ This project uses Selenium WebDriver with Behave (Cucumber-style BDD framework f
 
 
 ## Installation
-
+```
 Clone the repository and install dependencies:
 git clone https://github.com/yourusername/selenium-cucumber-emirates.git
 cd selenium-cucumber-emirates
 pip install -r requirements.txt
-
+```
 
 ## Project Structure
 
@@ -41,5 +41,6 @@ selenium-cucumber-python/
 ```
 
 ## Running Tests
-
+```
 behave feature/search_flight.feature
+```
