@@ -31,7 +31,7 @@ pip install -r requirements.txt
 │──steps
 │   ├──search_flight_steps.py
 │── requirements.txt      # Python dependencies
-│── README.md``` 
+│── README.md ``` 
 
 ##Running Tests
 
