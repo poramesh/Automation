@@ -1,0 +1,57 @@
+What DevOps Is:
+DevOps = Development + Operations
+It's not just a tool, it's a culture.
+
+A collaborative approach where:
+Developers
+Testers
+Operations
+...all work together to deliver software faster and more reliably.
+
+DevOps is:
+A culture of collaboration and continuous feedback
+A never-ending cycle of improvement
+A technical Agile approach where everyone is expected to be hands-on and technical
+
+
+
+Core DevOps Practices:
+
+Continuous Integration (CI)
+Developers frequently merge code to a shared repo
+Tools: Jenkins, GitHub Actions, GitLab CI, etc.
+
+Continuous Development (CD)
+Writing code in a continuous flow with minimal interruption
+
+Continuous Testing
+Automated tests run continuously to ensure code quality
+
+Continuous Deployment
+Code is automatically deployed to production after passing tests
+
+Continuous Monitoring
+Monitoring the application’s performance and availability in real time
+
+all of these fall under the umbrella of DevOps.
+
+
+
+
+Tools Used in DevOps (Toolchain Examples):
+
+CI Tools: Jenkins, GitLab CI
+Build Tools: Maven, Gradle
+Testing Tools: Selenium, JUnit, TestNG
+Deployment Tools: Docker, Kubernetes
+Monitoring Tools: Prometheus, Grafana, ELK stack
+
+
+Traditional vs DevOps Workflow:
+
+Phase	          Traditional SDLC	     DevOps
+Development	    Separate Dev team	     Shared responsibility
+Testing	Done    after dev	             Done alongside dev
+Deployment	    Manual, by Ops	       Automated, frequent
+Collaboration	  Siloed	               Cross-functional teams
+
