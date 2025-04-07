@@ -1,0 +1,107 @@
+
+
+PLAN-->CODE-->BUILD--->TEST--->RELEASE--->DEPLOY--->OPERATE
+
+<~~~~~~~~~~~~CI~~~~~~~~~~~~~~~><~~~~~~~~~~~~CD~~~~~~~~~~~~~~>
+
+
+CI – Continuous Integration
+Developers integrate code frequently into a shared repository (e.g., GitHub)
+Each check-in triggers an automated build + test
+Tools like Jenkins, Git, Maven/Gradle automate: Code integration, Building, Unit/automation testing and Feedback to developers
+Goal:
+Catch issues early
+Ensure that new code works well with existing code
+
+
+CD – Continuous Delivery / Deployment
+Continuous Delivery: Automatically prepares code for manual release
+Continuous Deployment: Automatically deploys the code to production if tests pass
+Flow:
+Code built
+Automated tests run (UI, API, DB, UAT, etc.)
+If all pass, app is auto-deployed
+Feature goes live to users
+
+
+
+
+Traditional Integration Problems
+>Developers worked in isolation → merged code after long gaps
+>All merged into a “stable” codebase at once → caused: Merge conflicts, Broken builds, Untested code in production, and Feedback came too late
+
+
+
+
+
+
+How Continuous Integration Solves This
+Developer Workflow:
+Developer A works on Feature A
+Developer A checks in code to shared repo
+
+Automated:
+Build triggered (e.g., via Maven)
+Tests run (e.g., Selenium)
+Feedback is given immediately
+Repeat for Developer B, C, etc.
+
+Benefits:
+Faster feedback
+Easier bug detection
+Code always in deployable state
+Supports Agile principles
+
+
+
+
+Definition of Continuous Integration (CI)
+“CI is a development practice where developers integrate code frequently, and each integration is verified by an automated build and automated tests to detect integration errors early.”
+
+Build & Test Automation
+Build process: Converts source code into executables (e.g., .class files in Java, .exe in .NET)
+Test automation: Validates that the integrated code works as intended
+Helps devs gain confidence in what they pushed
+
+
+
+
+Benefits of Continuous Integration
+Early Bug Detection-	Test runs early → bugs caught early → faster fixing
+Identify Code Breaks-	If a build fails, you instantly know whose commit caused it
+Enables Continuous Deployment-	Once tests pass, deployment can be fully automated
+Encourages Automated Testing-	Frequent code pushes lead to increased testing coverage
+Reduces Risk of Delays-	Issues are found earlier → avoids bottlenecks or surprises late in delivery
+Improves Software Quality-	Continuous feedback loop ensures cleaner, tested code
+Cheaper Development-	Fixing bugs early is less costly than post-release fixes
+
+
+
+
+CI Pipeline Flow Diagram
+Developer writes code
+Code committed to version control
+CI server detects change
+Code is built via build tools
+Automated tests run (unit, API, UI)
+Feedback (pass/fail) is given to developer
+Repeat cycle
+
+  
+Why Continuous Integration Matters
+Find bugs early
+Identify the origin of broken builds
+Enables continuous deployment
+Supports automated testing
+Reduces project delays
+Improves quality and team confidence
+
+  
+Best Practices in CI
+
+Use a Single Source Repository- Ensures all devs work on the same codebase
+Commit early and often	Keeps- changes small and manageable
+Don’t commit broken code-	Only push working, test-passed code to avoid breaking the build
+Fix broken builds immediately-	A broken build halts team progress – fix ASAP
+Build in every target environment-	Ensures compatibility across environments (dev, staging, prod, etc.)
+Create artifacts from builds-	Useful for rollbacks, testing, debugging, and audits
