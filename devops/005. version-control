@@ -127,3 +127,112 @@ Version Control Systems (VCS) help developers track changes, collaborate with ot
 Git is the most popular Distributed Version Control System (DVCS), enabling developers to work both offline and
 online and handle large projects effectively.
 GitHub is a web hosting platform for Git repositories that simplifies collaboration and code management.
+
+
+
+
+Git Lifecycle 
+
+Introduction to Git Lifecycle
+Git is a distributed version control system.
+It helps in tracking changes, collaborating with others, and managing code across different environments.
+GitHub is a remote repository hosting service.
+In this session, the focus is on pushing code from a local system to GitHub and understanding how the Git lifecycle works.
+
+
+Git Lifecycle Overview:
+Git Lifecycle States:
+Working Directory – Your actual project folder where you write code (e.g., Eclipse).
+Staging Area (Index) – A place where you prepare changes before committing.
+Local Repository – A .git folder where history is stored locally.
+Remote Repository – Hosted on GitHub, GitLab, etc.
+
+Pulling Code (Clone Scenario)
+>If the repository already exists on GitHub:
+>Use git clone to copy the entire repo from GitHub to your local machine.
+>You now have a copy of the code in your:
+Local repository
+Working directory
+>Use git pull to:
+Fetch and merge changes from remote to local.
+Keep your local repo up to date.
+
+Pushing Code (New Project Scenario)
+If you have a new local project and want to push it to GitHub:
+Step-by-Step:
+1. Initialize Git Repository
+git init
+Converts a folder into a Git repository.
+Creates a hidden .git folder.
+
+2. Check Status of Files
+git status
+Shows tracked/untracked files.
+Untracked files are red (not added to staging area).
+
+3. Add Files to Staging Area
+git add <filename>
+# or
+git add .      # Add all files
+# or
+git add -A     # Add all including deleted
+
+4. Commit Changes (to Local Repository)
+git commit -m "First commit"
+Commits staged changes to your local repo.
+Always write a meaningful commit message.
+
+5. Create GitHub Repository
+Go to GitHub > New Repository
+Name it (e.g., demo-project-1)
+Keep it public or private
+Do NOT initialize with README if you’re pushing an existing project.
+
+6. Connect Local to Remote Repository
+git remote add origin <repo-url>
+Links your local repo to the GitHub repo.
+
+7. Push Code to GitHub
+git push origin master
+# or for newer default branches:
+git push origin main
+Pushes code from your local to remote.
+
+
+Reverse Flow – Pulling & Checkout
+If others have pushed changes:
+Use git pull to fetch and merge changes into local.
+Use git checkout to switch branches or restore files.
+
+Git Working Directory Flow Summary
+Working Directory → (git add) → Staging Area → (git commit) → Local Repo → (git push) → Remote Repo
+
+
+Common Git Commands Summary
+Command	                Purpose
+git init	              Initialize new git repo
+git clone <url>	        Clone remote repo
+git add <file>	        Add files to staging area
+git commit -m ""	      Commit changes to local repo
+git status	            Check status of changes
+git diff	              Show unstaged changes
+git log	                Show commit history
+git push	              Push changes to remote repo
+git pull	              Pull latest changes from remote
+git checkout <file>   	Restore file or switch branches
+git remote add origin	  Connect to remote repository
+
+Sample Commands in Order
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/username/repo.git
+git push origin master
+
+
+Best Practices
+Use .gitignore to exclude files/folders like /target, /output, .classpath, etc.
+
+Write clear commit messages.
+Regularly pull changes if collaborating.
+Don’t push unnecessary files (e.g., build output)
