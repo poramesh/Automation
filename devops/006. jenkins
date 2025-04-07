@@ -1,0 +1,101 @@
+CI/CD for Automation Testers – Jenkins Introduction & Setup
+
+Introduction to Jenkins & CI Tools
+Popular CI Tools in the Market
+Jenkins (most popular, open-source, plugin-rich)
+TeamCity (TC)
+Travis CI
+CircleCI
+GitLab CI
+Bamboo (Atlassian)
+
+Jenkins is most widely used due to:
+Open-source nature
+Plugin flexibility
+Platform independence
+Large community support
+
+What is Jenkins?
+>Jenkins is a Continuous Integration (CI) tool used to automate:
+Code build
+Testing
+Deployment
+>Written in Java, requires JDK installed on the machine.
+>Supports job scheduling, test automation, deployment, and creating CI/CD pipelines.
+
+Installing Jenkins
+Steps:
+>Go to https://jenkins.io/download
+>Choose installer (e.g., for Windows)
+>Download and run setup (.msi)
+>Jenkins by default runs on: http://localhost:8080
+
+Initial Login Setup
+>Username: admin
+>Password: Found at:
+C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword
+>After login:
+Choose to install suggested/default plugins
+Create admin user
+
+Jenkins Dashboard Overview
+Options like:
+New Item
+Build History
+Manage Jenkins
+Credentials
+
+Plugin Management
+Manage Plugins:
+Go to Manage Jenkins > Manage Plugins
+Tabs:
+Installed: View existing plugins
+Available: Search & install new ones
+Updates: For existing plugins
+Advanced: Manual upload, etc.
+
+Examples:
+Git Plugin (for GitHub integration)
+SonarQube (code analysis)
+Email Extension
+Docker
+
+
+User & Email Configuration
+>User Management
+Manage Jenkins > Manage Users
+Create/edit users with appropriate roles
+
+>Email Notification Setup
+Go to Manage Jenkins > Configure System
+Configure Email Notification:
+SMTP Server: smtp.gmail.com
+Port: 465
+Auth + SSL: Enabled
+Gmail ID & App Password
+Test email supported
+
+Global Tool Configuration=> 🔧 Manage Jenkins > Global Tool Configuration
+Tools to Configure:
+>JDK:
+Use system-installed JDK or configure path
+Example: C:\Program Files\Java\jdk1.8.0_xx
+
+Maven:
+Add Maven name & path
+Example: C:\apache-maven-x.y.z
+
+Git:
+Usually auto-detected
+SonarQube, Ant, Docker: Configure as needed
+
+Credentials Setup=> Dashboard > Credentials > Add Credentials
+Use to store:
+GitHub login (username/password)
+Secret texts/files
+Certificates, etc.
+
+Example:
+Kind: Username & Password
+Use: GitHub repo access from Jenkins
+
