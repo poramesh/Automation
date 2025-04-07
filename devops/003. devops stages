@@ -1,0 +1,119 @@
+DevOps Stages Overview
+
+There are 4 major stages in the DevOps process:
+1. Version Control
+Purpose: Maintain and manage different versions of source code.
+Tools: Git, GitHub, SVN.
+Developers push their code to a central repository.
+
+2. Continuous Integration (CI)
+Triggered when code is pushed to the repository.
+Purpose: Build and test the code continuously.
+Includes:
+Code Compilation
+Code Validation / Static Code Analysis
+Code Review
+Unit Testing
+Integration Testing
+Tools: Jenkins, GitHub Actions, CircleCI, etc.
+
+3. Continuous Delivery (CD)
+Purpose: Deploy built and tested application to UAT (User Acceptance Testing) environments.
+Enables automated testing (e.g., automated UAT test cases).
+Ensures the code is always ready for production.
+Key: Code is deployed to staging/UAT but not automatically to production.
+
+4. Continuous Deployment
+Purpose: Automatically deploy tested code to production/live environment.
+No manual intervention required if everything passes.
+Ensures fast and reliable releases to end-users.
+
+
+
+
+Continuous Delivery vs Continuous Deployment
+Feature                   	  Continuous Delivery	                        Continuous Deployment
+Deployment Target	            UAT / Staging environment	                  Production environment
+Requires Manual Approval?	    Yes (optional deployment to production)	    No (auto-deploy to production)
+Main Goal	                    Prepare code for production	                Release code to production continuously
+
+
+CI/CD Pipeline Flow
+1. Developer Commits Code to source repository (GitHub, GitLab, etc.)
+2. CI Server detects change (e.g., Jenkins, GitHub Actions)
+3. CI Phase:
+Compile code
+Static code analysis / validation
+Code review
+Unit testing
+Integration testing
+4. CD Phase:
+If CI passes, deploy to UAT environment
+Run automated UAT tests
+Store build artifacts (e.g., .jar, .exe) in staging
+5. Continuous Deployment Phase (if enabled):
+Deploy to Production
+Live for end-users
+
+
+Why is CI/CD Important?
+Early bug detection – get feedback fast!
+Cost-effective – fixing bugs earlier saves $$$.
+Faster delivery – pipelines allow quicker release cycles.
+Reliable feedback loops – developers see test/build status instantly.
+Improved test coverage – testing happens early & often.
+Automated deployment – enables seamless delivery to UAT or production.
+
+
+
+Best Practices for CI/CD
+Maintain a single source code repository.
+Commit early and often (but only working code!).
+Never commit broken/incomplete code.
+Fix broken builds immediately.
+Build and test in all target environments.
+Generate artifacts from everybuild for traceability.
+As Automation Testers – What Should You Focus On?
+
+Understand how CI/CD works.
+Have hands-on knowledge of CI pipelines.
+Know the tools involved and how your automated test cases plug into the pipeline.
+Be ready to work with Docker, cloud environments, and CI tools like Jenkins.
+
+
+
+
+MORE ON Code Review
+
+Why Combine Code Review with CI?
+Ensures only high-quality code is merged
+Makes sure tests pass before merging
+Maintains coding standards
+Prevents broken builds from entering main
+
+
+
+Code Review in a CI Workflow (Typical Flow)
+
+1. Developer pushes code to a feature branch (e.g., feature/login)
+2. A Pull Request (PR) or Merge Request (MR) is created to merge into main or develop
+3. CI Pipeline is triggered automatically for the PR:
+Linting / Formatting checks
+Static Code Analysis (e.g., SonarQube, ESLint, Checkstyle)
+Unit Tests
+Build checks
+4. Code Review happens in parallel:
+Peers or leads review the code manually.
+They leave comments, suggest changes, or approve.
+5. If CI checks pass and the review is approved, the PR can be merged.
+
+
+
+
+Tools That Help With Code Review + CI
+
+Tool	                                  Role
+GitHub/GitLab/Bitbucket	            Manages PRs/MRs & allows inline comments
+Jenkins/GitHub Actions/CircleCI	    Runs CI checks (builds, tests)
+SonarQube, ESLint, StyleCop	        Static code analysis during CI
+Danger.js (optional)	              Automates PR rules (e.g., “no TODOs”)
