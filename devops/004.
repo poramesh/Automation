@@ -1,0 +1,143 @@
+Objective: To perform Continuous Integration (CI) with automated tests using Maven, Selenium, and TestNG inside Eclipse IDE.
+
+Basic Concepts Covered
+CI/CD Overview:
+Focus is currently on CI (Continuous Integration).
+Hands-on involves setting up test automation and integrating it into a Maven build.
+First Step: Create a test automation framework or basic structure to run automated tests.
+
+Tools & Technologies Used
+Eclipse IDE
+Maven (build automation and dependency management)
+Selenium WebDriver
+TestNG (test framework)
+Optional (for later):
+Extent Reports for reporting
+SonarQube, JIRA API, REST Assured for integrations
+
+
+Setup Steps
+1. Install Eclipse
+Download from https://www.eclipse.org
+Install as you would any normal software.
+
+2. Install Maven Plugin in Eclipse
+Most recent Eclipse versions have Maven built-in.
+Otherwise: Help → Eclipse Marketplace → Search "Maven Integration"
+
+3. Create a Maven Project
+Go to File → New → Project → Maven Project
+Use default archetype.
+Set:
+Group ID: com.automationtalks
+Artifact ID: demo-project-1
+Click Finish
+
+4. Understand Project Structure
+Maven generates this default structure:
+
+src/
+  main/java/        → Utilities, page objects, etc.
+  test/java/        → Actual test cases
+pom.xml             → Maven build config file (heart of the project)
+
+5. pom.xml – Add Dependencies
+Replace default JUnit with:
+<dependencies>
+  <!-- Selenium -->
+  <dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>3.4.0</version>
+  </dependency>
+
+  <!-- TestNG -->
+  <dependency>
+    <groupId>org.testng</groupId>
+    <artifactId>testng</artifactId>
+    <version>7.4.0</version>
+    <scope>test</scope>
+  </dependency>
+</dependencies>
+
+Add Build Plugins (compiler + reporting)
+<build>
+  <plugins>
+    <!-- Compiler Plugin -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-compiler-plugin</artifactId>
+      <version>3.8.1</version>
+      <configuration>
+        <source>1.8</source>
+        <target>1.8</target>
+      </configuration>
+    </plugin>
+
+    <!-- Surefire Plugin (TestNG Execution) -->
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <version>2.22.2</version>
+      <configuration>
+        <suiteXmlFiles>
+          <suiteXmlFile>testng.xml</suiteXmlFile>
+        </suiteXmlFiles>
+      </configuration>
+    </plugin>
+  </plugins>
+</build>
+
+Also mention you can include additional optional dependencies later (JIRA, SonarQube, etc.)
+
+6. Create Test Class Example (TestCase1.java)
+
+public class TestCase1 {
+    WebDriver driver;
+
+    @BeforeMethod
+    public void setUp() {
+        System.setProperty("webdriver.chrome.driver", "C:/path/to/chromedriver.exe");
+        driver = new ChromeDriver();
+        driver.manage().window().fullscreen();
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void test1() {
+        driver.get("https://automationtalks.com");
+        System.out.println("Page title is: " + driver.getTitle());
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        driver.quit();
+    }
+}
+
+7. Create testng.xml File
+it is created by right clicking on the main folder and it genereates and picks the testcases created.
+
+<suite name="Suite">
+  <test name="Test">
+    <classes>
+      <class name="com.automationtalks.tests.TestCase1"/>
+    </classes>
+  </test>
+</suite>
+
+and when you click on this file and try running it, it will run it as suite.
+
+8. Run the Tests via Maven
+Right-click on the project → Run As → Maven Test
+Or use command line: mvn test
+
+since the testng is added int he plugin, it will take care of the rest.
+Takeaways
+Maven handles all dependencies via pom.xml
+Tests are executed via Surefire + TestNG
+Code is modular, maintainable, and CI-ready
+
+
+
+WE CAN ALSO PERFORM API TESTING USING HTTP LIBRARRY IN SIMIALR WAY, WHERE WE ARE SENDING REQUEST AND VALIDATING THE RESPSOINSE WIHT ASSERT STATEMENT.
