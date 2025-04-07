@@ -1,101 +1,363 @@
-CI/CD for Automation Testers – Jenkins Introduction & Setup
+Introduction to CI Tools
 
-Introduction to Jenkins & CI Tools
-Popular CI Tools in the Market
-Jenkins (most popular, open-source, plugin-rich)
+CI (Continuous Integration):
+Continuous testing & integration of code to get quick feedback and fix issues early.
+
+Popular CI Tools:
+Jenkins (Most widely used – open source & flexible)
 TeamCity (TC)
 Travis CI
 CircleCI
 GitLab CI
-Bamboo (Atlassian)
+Bamboo
 
-Jenkins is most widely used due to:
-Open-source nature
-Plugin flexibility
-Platform independence
-Large community support
+
 
 What is Jenkins?
->Jenkins is a Continuous Integration (CI) tool used to automate:
-Code build
+Definition: Jenkins is a popular open-source CI server used in DevOps to automate the build, test & deployment pipeline (CI/CD).
+
+Key Features:
+Open-source
+Plugin-based architecture (rich plugin ecosystem)
+Platform-independent (runs anywhere Java runs)
+Community support
+Job scheduling & orchestration (chaining builds/tests/deployments)
+Written in Java → Requires JDK
+
+Jenkins Capabilities
+>Automates:
+Build triggers
 Testing
 Deployment
->Written in Java, requires JDK installed on the machine.
->Supports job scheduling, test automation, deployment, and creating CI/CD pipelines.
+>Achieves complete CI/CD pipelines
+>Supports pipeline-as-code via Jenkinsfile
 
 Installing Jenkins
-Steps:
->Go to https://jenkins.io/download
->Choose installer (e.g., for Windows)
->Download and run setup (.msi)
->Jenkins by default runs on: http://localhost:8080
+Go to: https://jenkins.io/download
+Choose platform (Windows, Linux, Docker, etc.)
+Download the installer (e.g., .msi for Windows)
+Install like any regular software
+Jenkins by default runs on http://localhost:8080
 
-Initial Login Setup
->Username: admin
->Password: Found at:
-C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword
->After login:
-Choose to install suggested/default plugins
-Create admin user
+First-Time Jenkins Login(when it runs on 8080)
+Initial Admin Password Location: C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword
+Copy password → Paste into setup screen
+Install suggested/default plugins during setup
+Create admin user or continue with default
 
 Jenkins Dashboard Overview
-Options like:
-New Item
+>Access: http://localhost:8080
+>Key Sidebar Options:
+New Item (Create job)
 Build History
 Manage Jenkins
 Credentials
+Configure System
+Manage Plugins
+
 
 Plugin Management
-Manage Plugins:
-Go to Manage Jenkins > Manage Plugins
-Tabs:
-Installed: View existing plugins
-Available: Search & install new ones
-Updates: For existing plugins
-Advanced: Manual upload, etc.
+>Navigate to: Manage Jenkins → Manage Plugins
+>Tabs:
+Installed: Plugins already installed
+Available: Search & install new plugins
+Updates: Update existing plugins
+>Example Plugins:
+Git Plugin – For pulling code from GitHub
+Email Extension Plugin – For sending build notifications
+Gradle, Docker, SonarQube plugins – As needed
+>Install Options:
+"Install without restart"
+"Download and install after restart"
 
-Examples:
-Git Plugin (for GitHub integration)
-SonarQube (code analysis)
-Email Extension
-Docker
-
-
-User & Email Configuration
->User Management
-Manage Jenkins > Manage Users
-Create/edit users with appropriate roles
-
->Email Notification Setup
-Go to Manage Jenkins > Configure System
-Configure Email Notification:
+Email Notification Setup
+>Navigate to: Manage Jenkins → Configure System
+>Email Notification Settings:
 SMTP Server: smtp.gmail.com
-Port: 465
-Auth + SSL: Enabled
-Gmail ID & App Password
-Test email supported
+Use SSL: 
+SMTP Port: 465
+SMTP Authentication: 
+Provide your Gmail ID & App password
+Test configuration (Send test email)
 
-Global Tool Configuration=> 🔧 Manage Jenkins > Global Tool Configuration
-Tools to Configure:
->JDK:
-Use system-installed JDK or configure path
-Example: C:\Program Files\Java\jdk1.8.0_xx
+Global Tool Configuration
+>Navigate to: Manage Jenkins → Global Tool Configuration
+>Configure paths for tools used in build/testing:
+1. JDK: Required for Jenkins & Java-based projects
+Use JAVA_HOME path
+2. Maven: Needed for Maven-based Selenium frameworks
+Use MAVEN_HOME path
+3. Git: Auto-configured in most cases
+4. SonarQube, Docker, etc.: Add as needed
 
-Maven:
-Add Maven name & path
-Example: C:\apache-maven-x.y.z
+Credentials Configuration
+>Navigate to: Credentials → (Global) → Add Credentials
+>Use when:
+Accessing private GitHub repos
+Accessing any tool/service that requires authentication
+>Credential Types:
+Username & Password (most common)
+Secret Text / Files
+Certificates
 
-Git:
-Usually auto-detected
-SonarQube, Ant, Docker: Configure as needed
+Sample Jenkins Setup Recap
+Install Jenkins
+Setup admin credentials
+Install required plugins (Git, Maven, Email, etc.)
+Configure tools: JDK, Maven
+Set up credentials (GitHub, SonarQube, etc.)
+Setup email notifications
+Ready to create & run Jenkins jobs (to be covered in next session)
 
-Credentials Setup=> Dashboard > Credentials > Add Credentials
-Use to store:
-GitHub login (username/password)
-Secret texts/files
-Certificates, etc.
+Next Steps (Preview of Next Session)
+Create Jenkins Job (Freestyle or Pipeline)
+Pull Selenium code from GitHub
+Run tests via Maven
+Configure GitHub credentials in job
+Setup email notifications for test result
+
+
+
+
+--------------------------------------------
+
+This guide explains how to:
+Create a Maven Job in Jenkins to execute Selenium test cases.
+Set up source code management with GitHub.
+Configure build triggers and environment settings.
+Add email notifications.
+Understand pre-build and post-build steps.
+
+
+Prerequisites
+Before setting up Jenkins job:
+>Jenkins installed (localhost:8080 in this example).
+>Selenium framework in place.
+>GitHub repository with a valid project.
+>Jenkins plugins installed:
+Git Plugin
+Email Extension Plugin (Editable Email Notification)
+SonarQube Scanner Plugin
+Jira Plugin (optional for later videos)
+
+Step-by-Step: Creating a Maven Job in Jenkins
+1. Create a New Job
+Open Jenkins dashboard (http://localhost:8080)
+Click New Item (left sidebar).
+Enter a job name (e.g., AutomationTalks_Dummy_GUI_1).
+Select Maven Project and click OK.
+
+2. Configure General Settings
+>Add Job Description: Brief summary of what the job does.
+>Select "Discard Old Builds":
+E.g., Keep only the last 10 builds.
+>Enable "GitHub Project" (optional, for better project tracking).
+
+3. Configure Source Code Management
+>Select Git.
+>Enter your GitHub Repository URL (HTTPS or SSH).
+>Credentials:
+Use existing credentials or click Add to create:
+Type: Username and Password or Personal Access Token
+Use description for identification.
+>Specify the branch to build (e.g., master).
+
+4. Configure Build Triggers (Optional)
+>Build periodically (CRON syntax) if needed.
+>Build after other projects (if chaining jobs).
+>Trigger from Jira (requires Jira plugin).
+
+5. Build Environment Options
+Check "Delete workspace before build starts" (cleans up old files).
+Check "Add timestamps to the console output" (for easier debugging).
+
+6. Pre-build Steps (Optional)
+Pre-build actions are executed before the actual build.
+>Common use case: Code Quality Scan with SonarQube.
+Requires SonarQube Scanner plugin.
+Select: "Execute SonarQube Scanner"
+
+7. Build Configuration
+>Root POM: Usually pom.xml (default).
+>Goals and Options:
+Example: test (runs tests defined in the POM file).
+Other options include clean, install, deploy, etc.
+>Your POM file should internally trigger the testng.xml file.
+
+8. Post-build Steps
+>Executed after the build completes.
+>Examples:
+Email Notification:
+Basic: Use "Email Notification" to send emails for failed or unstable builds.
+Advanced: Use Editable Email Notification for more control:
+Send email every time, regardless of build status.
+Attach reports, customize body/subject, etc.
+>Other Post Actions (with plugins):
+Trigger Jira issues.
+Run shell/batch commands.
+Archive test reports.
+Upload to artifact repositories.
+
+
+
+Running the Job
+>Click "Build Now" from the project dashboard.
+>Monitor progress under "Build History".
+>Click the build number → Console Output to view logs:
+You’ll see Maven download dependencies, run tests, and output results.
+>Sample Output Indicators:
+Running test...
+Tests run: 3, Failures: 0
+BUILD SUCCESS
+
+Email Notifications
+If configured correctly:
+>You'll receive an email if the build is unstable or failed.
+>For email on every build:
+Use "Editable Email Notification".
+Configure SMTP server in Jenkins settings.
+Add recipient list, content, and attachments if needed.
+
+
+Upcoming Features in Next Videos
+Editable email notification setup.
+Add SonarQube scanning before build.
+Automatically create Jira tickets for failed tests.
+Set build dependencies between jobs.
+Run test cases on Docker, cloud environments, and more.
+Create Pipeline Jobs using Jenkinsfiles for advanced workflows.
+
+Summary
+Feature	                       Tool/Setting
+Job Type	                     Maven Project
+Source Code	                   Git (GitHub)
+Test Framework	               Selenium + TestNG via Maven
+Build Trigger	                 Manual or Scheduled
+Email Notification	           Editable Email Plugin
+Static Code Analysis	         SonarQube Plugin
+Issue Tracking Integration	   Jira Plugin
+
+
+
+--------------------------
+
+Objective of the Video
+To configure editable email notifications in Jenkins so that:
+The email body and subject are customizable
+Attachments (like reports and screenshots) can be included
+Emails are sent based on specific build triggers (e.g., always, failure, etc.)
+
+Pre-requisites
+Jenkins is installed and running
+A Jenkins job (pipeline/freestyle) already exists and is executing test cases
+SMTP configuration is set up for sending emails
+Email Extension Plugin (Email Extension Plugin) is installed
+
+Step 1: Install "Email Extension Plugin"
+Go to: Manage Jenkins > Manage Plugins
+Navigate to the Available tab
+Search for: Email Extension Plugin
+Install and restart Jenkins
+
+Step 2: Configure SMTP Settings
+>Go to: Manage Jenkins > Configure System
+>Scroll down to Extended E-mail Notification
+>Enter the following details:
+SMTP server: smtp.gmail.com (or your email provider's SMTP)
+>Click Advanced:
+Check: Use SMTP Authentication
+Username: your email (e.g., yourname@gmail.com)
+Password: app password (for Gmail, use an App Password)
+Use SSL: checked
+SMTP port: 465
+>Click Apply and Save
+
+Step 3: Configure Editable Email Notification in a Job
+>Go to your Jenkins job → Configure
+>Scroll to Post-build Actions
+>Click Add post-build action → Select Editable Email Notification
+
+Step 4: Fill Editable Email Notification Settings
+>Email Recipients
+Enter comma-separated emails:
+example@gmail.com, teamlead@company.com
+
+>Email Subject (Dynamic)
+Example:
+${BUILD_STATUS} - ${PROJECT_NAME} - Build #${BUILD_NUMBER}
+
+${BUILD_STATUS} → PASSED / FAILED / etc.
+${PROJECT_NAME} → Jenkins project name
+${BUILD_NUMBER} → current build number
+
+>Email Content (HTML format)
+Change content type to: HTML
 
 Example:
-Kind: Username & Password
-Use: GitHub repo access from Jenkins
+Dear User,<br><br>
+Please find the attached test execution report for project <b>${PROJECT_NAME}</b> 
+build number <b>${BUILD_NUMBER}</b>.<br><br>
+Build URL: <a href="${BUILD_URL}">${BUILD_URL}</a><br><br>
+Thanks,<br>
+Automation Team
 
+Attachments
+>Provide relative paths (from workspace) or wildcards: test-output/emailable-report.html, screenshots/*.png
+>You can attach:
+HTML reports
+Screenshots
+Logs (even compressed)
+>Tip: Use wildcards like *.jpg, *.html for multiple files.
+
+
+
+Step 5: Set Triggers (When Email Should Be Sent)
+>Go to: Post-build Action → Editable Email Notification → Add Trigger
+>Choose based on your needs:
+Always: every build
+Failure: only on failed builds
+Success: only on success
+Aborted, Unstable, etc.
+>Or set default triggers under: Manage Jenkins > Configure System > Extended E-mail Notification → Default Triggers
+
+Step 6: Save and Run the Build
+>Save the job
+>Click Build Now
+>Go to Console Output to monitor progress
+>Look for:
+Sending email to: example@gmail.com
+>Check your email inbox for the report
+
+📥 Sample Email Output
+Subject:
+SUCCESS - Dummy_GUI_Project - Build #6
+Body:
+Dear User,
+
+Please find the attached test execution report for project Dummy_GUI_Project 
+build number 6.
+
+Build URL: http://localhost:8080/job/Dummy_GUI_Project/6/
+
+Thanks,
+Automation Team
+
+Attachments:
+emailable-report.html
+Screenshots
+Build logs (optional)
+
+
+Key Variables Used
+Variable	       Description
+${BUILD_STATUS}	 Build result (SUCCESS/FAILURE/UNSTABLE)
+${PROJECT_NAME}	 Jenkins job name
+${BUILD_NUMBER}	 Build number
+${BUILD_URL}	   URL to this build
+
+Troubleshooting
+Issue	                  Solution
+No email received	      Check SMTP credentials, firewall, or less secure app access
+Email not triggered	    Check the correct Trigger is selected
+Attachments missing	    Check the relative file path from workspace/
+Gmail blocked email	    Enable access for less secure apps or use App Password
