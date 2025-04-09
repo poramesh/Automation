@@ -144,14 +144,14 @@ Step-by-Step: Creating a Maven Job in Jenkins
 1. Create a New Job
 Open Jenkins dashboard (http://localhost:8080)
 Click New Item (left sidebar).
+Select Maven Project
 Enter a job name (e.g., AutomationTalks_Dummy_GUI_1).
-Select Maven Project and click OK.
+and click OK.
 
 2. Configure General Settings
 >Add Job Description: Brief summary of what the job does.
->Select "Discard Old Builds":
-E.g., Keep only the last 10 builds.
->Enable "GitHub Project" (optional, for better project tracking).
+>there are mnay options like, "Discard Old Builds": E.g., Keep only the last 10 builds.
+and github prinects (like its a personal projects), disable projects, Execute the current build if necessary.
 
 3. Configure Source Code Management
 >Select Git.
@@ -165,16 +165,21 @@ Use description for identification.
 4. Configure Build Triggers (Optional)
 >Build periodically (CRON syntax) if needed.
 >Build after other projects (if chaining jobs).
->Trigger from Jira (requires Jira plugin).
+>Build periofically,
+>Trigger when issue updated in Jira (requires Jira plugin).
+>built when comment is added to jira
 
 5. Build Environment Options
-Check "Delete workspace before build starts" (cleans up old files).
-Check "Add timestamps to the console output" (for easier debugging).
+>Check "Delete workspace before build starts" (cleans up old files).
+>Check "Add timestamps to the console output" (for easier debugging).
+>there are other options as well like abort the built if its stuck,
+generate release notes
+use secrete texts or files
 
 6. Pre-build Steps (Optional)
 Pre-build actions are executed before the actual build.
 >Common use case: Code Quality Scan with SonarQube.
-Requires SonarQube Scanner plugin.
+Requires SonarQube Scanner plugin which basically does static code anaylis
 Select: "Execute SonarQube Scanner"
 
 7. Build Configuration
@@ -199,6 +204,9 @@ Archive test reports.
 Upload to artifact repositories.
 
 
+ONCE YOU HAVE CTREATED A JOB,
+IT WILL HAVE SO MANY DIFF OPTIONS LIKE BUILD NOW, WORKSPACE WHERE WE HAVE GOT CODE, DELETE MAVEN PROJECT, CONFIGURE, CHNAGES, MODULES on the right side if the created job.
+
 
 Running the Job
 >Click "Build Now" from the project dashboard.
@@ -209,6 +217,7 @@ You’ll see Maven download dependencies, run tests, and output results.
 Running test...
 Tests run: 3, Failures: 0
 BUILD SUCCESS
+THE TEST CASES RAN IN THE HEADLESS MODE.
 
 Email Notifications
 If configured correctly:
@@ -361,3 +370,11 @@ No email received	      Check SMTP credentials, firewall, or less secure app acc
 Email not triggered	    Check the correct Trigger is selected
 Attachments missing	    Check the relative file path from workspace/
 Gmail blocked email	    Enable access for less secure apps or use App Password
+
+
+
+
+while your build is running you can vire cobsole o/p
+
+
+this is just a simple pipeline!!! thnkuu
