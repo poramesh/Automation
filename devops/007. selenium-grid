@@ -1,0 +1,331 @@
+Selenium Grid
+
+A part of the Selenium test automation suite.
+Not a standalone tool but a set of jar files/APIs used for distributed and parallel test execution.
+Allows running test cases across multiple machines, browsers, and OS combinations simultaneously.
+
+Why Use Selenium Grid?
+Cross-browser testing: Run the same test on multiple browsers (Chrome, Firefox, IE, etc.).
+Cross-platform testing: Test on different OS (Windows, Linux, macOS).
+Parallel testing: Run multiple tests simultaneously to reduce total execution time.
+Scalability: Helps in testing large test suites efficiently by distributing tests across nodes.
+
+When to Use Selenium Grid?
+When you need to test on multiple browser versions and OS combinations.
+When you want to reduce execution time using parallel execution.
+When executing tests in a CI/CD pipeline (e.g., via Jenkins).
+When you want to ensure compatibility across different environments (OS + browser).
+
+Selenium Grid Architecture
+1. Hub:
+Acts as a central server.
+Receives all test requests and routes them to the correct node.
+Responsible for managing the test execution across the grid.
+Only one hub per Selenium Grid.
+
+2. Nodes:
+Machines or environments where the actual test execution happens.
+Each node has a Selenium WebDriver and a browser installed.
+Can be configured with specific capabilities (e.g., browser type, version, OS). 
+Multiple nodes can connect to a single hub.
+
+Example Setup:
+Hub (Central Machine):
+Accepts test requests.
+
+Nodes:
+Node 1 – Windows 10 + Chrome
+Node 2 – macOS + Safari
+Node 3 – Linux + Firefox
+Test cases are sent to the hub → hub reads desired capabilities → routes tests to matching nodes.
+
+Benefits of Selenium Grid
+Reduced execution time with parallel testing.
+Wider test coverage with multiple environments.
+Better resource utilization.
+Useful in both local and cloud-based CI/CD environments.
+
+How It Works
+Test cases define desired capabilities (e.g., browser, OS), 
+Hub receives the test via RemoteWebDriver.
+Hub matches capabilities and forwards the test to the appropriate node.(if the recieved capabilities says it needs to be on chrome, it runs the test cases on chrome)
+Node executes the test and sends results back.
+
+
+
+
+----------------------
+
+
+What is Selenium Grid?
+Selenium Grid allows you to run your Selenium test scripts on different machines (nodes) and browsers in parallel, by connecting
+them through a central hub.
+
+Why is it useful?
+In many companies (especially CMMI Level 3 or 5), Selenium Grid is used to execute test scripts on various machines/environments without 
+needing to install everything locally.
+You usually just get the WebDriver URL from your org and can start running your tests by setting the desired capabilities (e.g., browser, version, platform, etc.).
+
+If Selenium Grid isn’t set up yet – Here’s how to do it:
+
+Step 1: Download Selenium Server (Standalone JAR)
+Selenium Grid is not a tool but a JAR file (Java Archive) you run with Java.
+Download from:
+https://www.selenium.dev/downloads/
+
+Look for: "Selenium Server (Grid)"
+Example version: selenium-server-standalone-3.14.0.jar
+This .jar file will act as both the hub and the nodes, depending on how you run it.
+
+Step 2: Start the Selenium Hub
+Open Command Prompt in the folder where the .jar file is downloaded.
+
+Run the following command:
+java -jar selenium-server-standalone-3.14.0.jar -role hub
+
+Output:
+It will start a hub on http://localhost:4444
+
+Console will say:
+"Selenium Grid hub is up and running"
+
+Open browser and go to:
+http://localhost:4444/grid/console
+You’ll see the hub running — but no nodes connected yet.
+
+Step 3: Set Up and Connect a Node
+You need to tell the hub what browsers it can use (e.g., Chrome, Firefox).
+For Chrome, you need to download chromedriver.exe and provide its path.
+
+Here’s the command format:
+java -Dwebdriver.chrome.driver=chromedriver.exe -jar selenium-server-standalone-3.14.0.jar -role node -hub http://<HUB_IP>:4444/grid/register
+java -Dwebdriver.chrome.driver=chromedriver.exe -jar selenium-server-standalone-3.14.0.jar -role webdriver -hub http://<HUB_IP>:4444/grid/register
+
+Explanation of each part:
+-Dwebdriver.chrome.driver=... → sets the Chrome driver
+-jar ... → runs the same JAR file
+-role node → tells it to act as a node (not a hub)
+-hub ... → tells this node to register itself with the hub
+
+Replace <HUB_IP> with the IP address of the hub.
+If you're running everything on the same machine, you can use localhost.
+
+Important:
+If the node doesn’t connect, double-check:
+The IP address is correct
+Port 4444 is not blocked
+The ChromeDriver version matches your browser
+
+-----
+-role node is used to register a machine as a node in the Selenium Grid, allowing it to receive and run tests from the hub.
+-role webdriver is used to run tests via a WebDriver, connecting to the grid hub and executing the tests remotely on a node.
+
+In simpler terms:
+Node registers and listens for tests.
+WebDriver is used to send and execute the tests.
+
+
+java -Dwebdriver.chrome.driver=chromedriver.exe -Dwebdriver.gecko.driver=geckodriver.exe -jar selenium-server-standalone-3.14.0.jar -role webdriver -hub http://<HUB_IP>:4444/grid/register
+In this case, the node will be capable of handling both Chrome and Firefox based on the desired capabilities you specify in your test scripts.
+-------
+
+Step 4: Verify Node is Connected
+Go back to: http://localhost:4444/grid/console
+
+Now, you should see the node (browser) listed there.
+If you configured multiple nodes (e.g., Chrome, Firefox on different systems), you'll see all of them here.
+
+Troubleshooting Tips:
+Port errors: Sometimes ports like 5556 are busy — try another one or just restart.
+Node not registering? Usually due to:
+Wrong IP or hub URL
+Time mismatch between hub and node
+Port conflict
+
+Step 5: Run Your Tests on the Grid
+Your test script should now use RemoteWebDriver and point to the hub URL:
+
+WebDriver driver = new RemoteWebDriver(
+    new URL("http://localhost:4444/wd/hub"),
+    desiredCapabilities
+);
+Set desiredCapabilities to Chrome, Firefox, etc., based on the node setup.
+
+Summary:
+Step	  Action
+Step 1	Download Selenium standalone server jar
+Step 2	Start the hub on port 4444
+Step 3	Start node(s) and register with the hub
+Step 4	Check in browser if node is connected
+Step 5	Write tests to use RemoteWebDriver
+
+
+in python:
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
+# Replace with your actual hub IP address or use 'localhost' if it's local
+SELENIUM_GRID_URL = "http://192.168.1.104:4444/wd/hub"
+
+# Set desired capabilities for Chrome
+capabilities = DesiredCapabilities.CHROME.copy()
+
+driver = webdriver.Remote(
+    command_executor=SELENIUM_GRID_URL,
+    desired_capabilities=capabilities
+)
+
+driver.get("https://www.google.com")
+print("Title of the page is:", driver.title)
+
+# Close the browser
+driver.quit()
+
+
+
+in java:
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class SeleniumGridTest {
+    public static void main(String[] args) throws MalformedURLException {
+        // Replace with your actual hub IP
+        String hubUrl = "http://192.168.1.104:4444/wd/hub";
+
+        // Set desired capabilities for Chrome
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setBrowserName("chrome");
+
+        // Initialize the remote WebDriver
+        WebDriver driver = new RemoteWebDriver(new URL(hubUrl), capabilities);
+
+        // Run your test
+        driver.get("https://www.google.com");
+        System.out.println("Title is: " + driver.getTitle());
+
+        // Close browser
+        driver.quit();
+    }
+}
+
+
+
+-------------
+
+Selenium Grid Test Execution 
+
+1. Set Up Selenium Grid
+Hub: Central point to distribute tests.
+Node: Machines where tests are executed.
+Use commands to start hub and register nodes.
+
+2. Define Desired Capabilities
+Helps choose browser and platform (OS).
+
+DesiredCapabilities dr = new DesiredCapabilities();
+dr.setBrowserName("chrome");
+dr.setPlatform(Platform.WIN10);
+You can get browser and platform names from Grid UI > View Configurations.
+
+3. RemoteWebDriver Setup
+Instead of:
+WebDriver driver = new ChromeDriver();
+
+Use:
+WebDriver driver = new RemoteWebDriver(new URL("http://<hub-ip>:4444/wd/hub"), dr);
+
+Replace <hub-ip> with actual IP of your hub machine.
+Pass the DesiredCapabilities object to the RemoteWebDriver.
+
+4. Execution Flow
+Once test is triggered, hub receives the request.
+Hub routes to appropriate node based on capabilities.
+Node executes the test (e.g., opens Chrome on Windows 10).
+Note: In a demo setup, hub and node might be on the same machine, but ideally, they’re on separate machines.
+
+5. Jenkins Integration
+Push your project to GitHub.
+Jenkins job pulls the latest code.
+Jenkins runs:
+Sonar analysis (e.g., using SonarCloud).
+Test execution via Maven and Selenium Grid.
+Execution appears to happen locally but is actually distributed across nodes.
+
+6. Best Practices
+Avoid committing unnecessary files (like .class and .settings).
+Use meaningful commit messages.
+Consider parameterizing browser, version, and platform using a properties file or Jenkins parameters.
+
+7. Optional Enhancements
+Add version-specific browser targeting.
+Use different node machines (Linux, Win7, etc.) for wider test coverage.
+Add email notifications post-build.
+
+
+
+------------------
+
+Here's a basic example of how to run a Selenium test on BrowserStack using Java + TestNG + RemoteWebDriver. This connects your test to the BrowserStack 
+cloud infrastructure using their hub and runs it on a specified browser/OS combo.
+
+Prerequisites:
+Add the Selenium Java dependency in your pom.xml (if using Maven).
+You need your BrowserStack username and access key from BrowserStack Automate dashboard.
+
+Java + TestNG Example for BrowserStack:
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import java.net.URL;
+
+public class BrowserStackTest {
+
+    public static final String USERNAME = "your_browserstack_username";
+    public static final String AUTOMATE_KEY = "your_browserstack_access_key";
+    public static final String URL = "https://" + USERNAME + ":" + AUTOMATE_KEY + "@hub-cloud.browserstack.com/wd/hub";
+
+    public WebDriver driver;
+
+    @BeforeMethod
+    public void setUp() throws Exception {
+        DesiredCapabilities caps = new DesiredCapabilities();
+
+        caps.setCapability("browser", "Chrome");
+        caps.setCapability("browser_version", "latest");
+        caps.setCapability("os", "Windows");
+        caps.setCapability("os_version", "10");
+        caps.setCapability("name", "Sample Test on BrowserStack");
+
+        driver = new RemoteWebDriver(new URL(URL), caps);
+    }
+
+    @Test
+    public void testGoogleSearch() {
+        driver.get("https://www.google.com");
+        System.out.println("Page title is: " + driver.getTitle());
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
+
+Notes:
+You can run on different OS + Browser combos by modifying the DesiredCapabilities.
+You can also include capabilities like:
+
+caps.setCapability("build", System.getenv("BUILD_NUMBER"));
+caps.setCapability("project", "My Test Project");
+caps.setCapability("browserstack.debug", "true"); // to enable screenshots and video logs
