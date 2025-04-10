@@ -1,0 +1,496 @@
+Introduction to Docker
+
+Why Do We Need Docker?
+One of the common challenges testers face is:
+“The application works on my machine, but not on yours.”
+This happens because every environment—dev, QA, UAT, or production—might have subtle differences in infrastructure, settings, dependencies, or OS versions.
+
+Docker solves this by:
+Ensuring a consistent computing environment across all stages of the SDLC.
+Packaging the entire application along with its environment into one lightweight, portable container.
+
+
+The Virtual Machine Problem
+Running multiple Virtual Machines (VMs) is resource-intensive.
+Each VM has its own OS, leading to high RAM/CPU usage even if not fully utilized.
+Resources are dedicated, not shared.
+
+
+
+APP1       APP2
+bins/libs  bins/libs
+GUESTOS GUESTOS
+  HYPERVISOR
+  INFRASTRCUTURE
+       VM
+
+
+APP1      APP2       APP3
+bins/libs bins/libs bins/libs 
+      CONTAINER ENGINE
+            OS
+        CONTAINERS
+
+
+You can run the apps on same os system but on different containers where resoruces are shared 
+so we dont ahve to install different os
+
+
+Containers
+Something more than virtualization, to run your applications without affecting other systems
+Container includes the application and its dependencies
+It shares the kernels with other containers
+Runs as isolated process
+Docker containers are not tied with any specific infrstacuture, they run on any infra/cloud
+Container consists of:
+>OS
+>Software that you build
+>ALl dependencues for your siftware
+>All env settings
+
+
+WHEN YOU PACKAGE WITH ALL THESE SETTINGS, ITs EASIER TO RUN ON ANY OS CAUSE IT GOT ALL THE NECESSARY DEPEDENCIES
+AND SEETINGS WRAPPED UP IN A DOCKER FILE 
+
+Docker and Containers
+Docker allows running multiple containers on the same OS.
+Containers are lightweight, share the host OS kernel, and consume resources only when needed.
+Think of containers as isolated processes, not isolated systems like VMs.
+
+What is Docker?
+It helps you Build, Ship, and Run your applications seamlessly.
+It's open-source and supports a vast repository of pre-built images via Docker Hub.
+
+How Docker Works: Overview
+>Developer creates a Dockerfile
+Includes base image, app code, environment variables, dependencies, and settings.
+>Dockerfile is used to build a Docker Image
+Image = snapshot of the app and environment.
+>Image is uploaded to Docker Hub (optional)
+A central registry like GitHub but for container images.
+>Other teams pull this image and run it in containers
+Same app, same environment—no “works on my machine” problem.
+
+Containers vs Virtual Machines
+
+Feature	          Virtual Machines	             Docker Containers
+OS	              Full guest OS per VM	         Share host OS kernel
+Resource Usage   	High (dedicated allocation)	   Lightweight (on-demand)
+Startup Time	    Slow	                         Fast
+Isolation	        System-level isolation	       Process-level isolation
+Portability 	    Less portable	                 Highly portable
+
+Key Components
+Docker Engine: The runtime that manages containers.
+Dockerfile: Blueprint for creating Docker images.
+Docker Image: A static snapshot (app + env).
+Docker Container: A running instance of the image.
+Docker Hub: Online repo for sharing images.
+
+Use Case for Testers
+As automation testers, you're often running tests on Selenium Grid.
+Docker lets you spin up Selenium containers (e.g., selenium/node-chrome) easily.
+No need to manually install browsers or WebDriver—you get a ready-to-run environment.
+Test execution becomes faster, more consistent, and scalable.
+
+
+
+----------------------
+Docker Installation and Basics
+
+Docker is a containerization platform.
+Useful for creating containers with Selenium and browsers to run test cases.
+
+1. Installing Docker
+>Official Site for Download
+Visit: https://docs.docker.com/install
+>Docker supports:
+Cloud: AWS, Azure
+OS: Linux, Mac, Windows
+
+2. Windows System Requirements
+>Windows 10 (64-bit), Pro/Enterprise/Education
+>Latest updates installed
+>Virtualization enabled in BIOS
+>At least 4GB RAM
+
+3. If System Does Not Meet Requirements
+>Use Docker Toolbox instead of Docker Desktop
+>No need for virtualization with Docker Toolbox
+
+4. Installation Steps
+>Download Docker Toolbox for Windows
+>Run the .exe file
+>Install with default settings (Next → Next → Install)
+
+5. Post Installation Check
+>Open Command Prompt
+>Run: docker -v to check Docker version
+>Success output confirms Docker is installed
+
+
+Understanding Docker Images and Containers
+Docker uses images, not software setups
+An image is a packaged environment built using a Dockerfile
+Dockerfile contains instructions about:
+>Required OS
+>Software to install
+>Dependencies and configurations
+
+Docker Hub
+Public and private registry for Docker images
+URL: https://hub.docker.com
+Works like GitHub for sharing containers
+Public images are free; private images are paid
+
+Pulling Images from Docker Hub
+docker pull <image-name>
+Example: docker pull wordpress
+This fetches the latest WordPress image
+If no version is specified, the latest is used
+
+You’ll see messages like:
+"Using default tag: latest"
+"Pulling from library/wordpress"
+
+Sharing Docker Images
+>Developers can push images to Docker Hub
+>Shared with Testers, UAT teams, and DevOps
+>Acts as a central repository for container images
+
+
+
+--------------------
+
+
+Docker Commands for Selenium Automation
+
+Where to Run Docker Commands
+Docker commands can be run in:
+Command Prompt (Windows)
+PowerShell
+Linux Terminal
+
+In this session, all commands are shown via Command Prompt.
+
+1. General Docker Help
+docker --help
+Lists all available Docker commands and options.
+
+Use this to get guidance on:
+build, run, push, pull, images, logs, start, exec, etc.
+
+To get help for a specific command:
+docker run --help
+Shows all flags and usage patterns for the docker run command.
+
+2. Downloading Images
+From Docker Hub
+docker pull <image-name>
+Example:
+docker pull selenium/hub
+This pulls the latest image if no tag is specified.
+
+Tags can be added to pull specific versions:
+docker pull selenium/hub:3.141
+
+3. Listing Images
+docker images
+Lists all the Docker images currently on your system.
+
+Columns include:
+Repository (e.g., selenium/hub)
+Tag (e.g., latest)
+Image ID
+Created date
+Size
+
+4. Removing Docker Images
+docker rmi <image-id>
+Example:
+docker rmi 123456abcde0
+Deletes the image with the given ID.
+Used when an image is obsolete or replaced.
+
+5. Viewing Running Containers
+docker ps
+Shows all currently running containers.
+If no containers are running, the list will be empty.
+
+To view all containers (including stopped ones):
+docker ps -a
+
+6. Viewing Container Logs
+docker logs <container-id>
+Displays logs/output from the container.
+Only works for running containers.
+
+7. Executing Commands Inside a Container
+docker exec -it <container-id> /bin/bash
+Opens an interactive shell into the container.
+
+8. Starting a Container
+docker start <container-id or name>
+
+9. Running a New Container
+docker run <image-name>
+Starts a new container based on the specified image.
+
+Additional flags like -d, -p, and --name can be added.
+Example:
+docker run -d -p 4444:4444 --name selenium-hub selenium/hub
+
+10. Docker Image History
+docker history <image-name>
+Shows the history of how the image was built layer by layer.
+
+11. Logging in to Docker Hub
+docker login
+Authenticate with your Docker Hub account to push/pull private images.
+
+12. Pushing Images to Docker Hub
+docker push <your-dockerhub-username>/<image-name>
+Used to upload local images to your Docker Hub repository.
+Requires prior login.
+
+Docker Hub Search Tips
+Visit: https://hub.docker.com
+Search for "selenium"
+Look for official images uploaded by selenium
+Example: selenium/hub, selenium/node-chrome, selenium/node-firefox
+
+Additional Notes
+Docker images have unique IDs (Image IDs)
+Be careful with docker rmi – it deletes images, not just stops them
+When an image is updated using docker pull, the previous version might still remain unless explicitly deleted
+
+
+
+
+
+
+docker login   => authenticate to docker hub(or other docker registry)
+docker pull user/image   => downloads an image from docker hub
+docker push user/image   => uploads an image to docker hub. you must be authnticated to run this command.
+docker ps      =>  list all running containers.
+docker ps -a    => list all container isntances with their ID and status
+docker images      => lists all images on the local machine.
+docker history user/image     =>  lists the history of an image.
+docker logs [container name or ID]      => displays the logs from a running container.
+dcoker port [container name or ID]      => displays the exposed port of a running container
+docker diff [container name or ID]       =>  Lists the changes made to a container. 
+docker run -it user/image      => runs an image, creating a container and changing the terminal to the terminal within the container.
+docker start [container name or ID]      => start a container
+docker stop [container name or ID]     => stop a container.
+docker rm -f [container name or ID]    => delete a container.
+docker rmi      => delete an image.
+docker exec [container name or ID] shell command   => executes a command within a running container
+
+
+----------
+
+
+
+Selenium Grid on Docker
+
+
+
+What is Selenium Grid?
+Selenium Grid:
+Distributes test execution across multiple machines and browsers.
+Consists of a central Hub and multiple Nodes.
+
+In Docker terms:
+Hub = Selenium Hub container
+Nodes = Selenium Node containers (e.g., Chrome, Firefox)
+
+How It Works:
+Hub container manages all node registrations.
+Node containers (Chrome/Firefox) connect to the Hub.
+Tests are sent to the Hub.
+Hub routes the tests to appropriate nodes based on availability & capabilities.
+
+Required Docker Images:
+Get from Docker Hub:
+selenium/hub → Selenium Grid Hub
+selenium/node-chrome-debug → Chrome Node with VNC server
+selenium/node-firefox-debug → Firefox Node with VNC server
+
+Docker Commands:
+docker pull selenium/hub
+docker pull selenium/node-chrome-debug
+docker pull selenium/node-firefox-debug
+
+Verify Downloaded Images:
+docker images
+
+Understanding Debug Nodes:
+Debug Nodes have VNC servers to see browser execution.
+Useful for UI visibility during execution.
+Needed when you want to visually observe test progress.
+
+Run Selenium Hub:
+Command:
+docker run -d -p 4446:4444 --name selenium-hub selenium/hub
+Flags:
+-d: Detached mode (run in background)
+-p 4446:4444: Expose internal port 4444 on localhost port 4446
+--name selenium-hub: Assign container a name
+
+Check Status:
+docker ps
+
+View Logs:
+docker logs <hub-container-id>
+Look for:
+Selenium Grid hub is up and running
+Node should register at: http://localhost:4446/grid/register
+
+Register Nodes to Hub:
+Chrome Node:
+docker run -d -p 32768:5900 --link selenium-hub:hub selenium/node-chrome-debug
+Firefox Node:
+docker run -d -p 32769:5900 --link selenium-hub:hub selenium/node-firefox-debug
+
+Notes:
+--link: Connects node container to the hub.
+-p 32768:5900 and -p 32769:5900: VNC ports for Chrome and Firefox respectively.
+
+Confirm Node Registration:
+Check Hub logs again:
+docker logs <hub-container-id>
+Expected:
+Registered a node <node-url>
+
+Execution on Docker Grid:
+Update RemoteWebDriver URL in test code:
+URL hubUrl = new URL("http://localhost:4446/wd/hub");
+Ensure OS = LINUX in DesiredCapabilities (Docker containers run on Linux)
+Execute test using:
+Run As → TestNG Test
+
+Expected Output:
+Test cases run via Docker
+No UI shown by default
+Console output confirms execution with page titles, etc.
+
+View Test Execution via VNC Viewer (Optional):
+>Use VNC Viewer
+>Connect to:
+Chrome Node: localhost:32768
+Firefox Node: localhost:32769
+>Password: Usually "secret" (check Docker image docs)
+
+
+COMPONENT       COMMAND                                                                           PURPOSE
+Selenium Hub	  docker run -d -p 4446:4444 --name selenium-hub selenium/hub	                      Starts the Grid hub
+Chrome Node	    docker run -d -p 32768:5900 --link selenium-hub:hub selenium/node-chrome-debug	  Registers Chrome node
+Firefox Node	  docker run -d -p 32769:5900 --link selenium-hub:hub selenium/node-firefox-debug	  Registers Firefox node
+View Logs	      docker logs <container-id>	                                                      Monitor hub/node status
+Execution      	From IDE or CI	                                                                  Run tests through RemoteWebDriver on Docker grid
+
+
+
+
+_----------------------------_
+
+
+Deploying Selenium Grid on Google Cloud Platform (GCP) Using Docker Compose
+
+1. GCP Virtual Machine Setup
+Create a new VM instance on Google Cloud.
+SSH into the VM.
+Update packages:
+sudo apt update
+
+2. Install Docker
+Install Docker on the VM:
+sudo apt install docker.io
+
+3. Install Docker Compose
+Switch to root:
+sudo su
+Install Docker Compose:
+apt install docker-compose
+
+Docker Compose Setup
+4. Create Project Directory
+mkdir compose
+cd compose
+
+5. Create Docker Compose File
+Use nano or any editor:
+nano docker-compose.yml
+
+Example docker-compose.yml content:
+version: "3"
+services:
+  selenium-hub:
+    image: selenium/hub
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+
+  chrome:
+    image: selenium/node-chrome
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+
+  firefox:
+    image: selenium/node-firefox
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - HUB_HOST=selenium-hub
+
+Save with CTRL + O and exit with CTRL + X.
+
+Start Selenium Grid
+6. Launch Docker Compose
+docker-compose up
+This pulls required images and starts Selenium Hub with Chrome and Firefox nodes.
+
+Access Selenium Grid UI
+Visit:
+http://<External-IP>:4444/ui
+The UI shows connected browsers: Chrome and Firefox.
+
+Scaling Chrome Nodes (Optional)
+7. Scale Chrome Nodes
+Open a new SSH session:
+cd compose
+sudo su
+docker-compose up -d --scale chrome=7
+Refresh Selenium Grid UI to see the new Chrome nodes.
+
+Running Tests Against the Grid
+8. Configure Test Code
+Set remote WebDriver in your test:
+URL gridUrl = new URL("http://<External-IP>:4444/wd/hub");
+DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+WebDriver driver = new RemoteWebDriver(gridUrl, capabilities);
+
+9. Execute the Tests
+When test runs:
+Selenium Grid receives the request.
+Launches browser in one of the nodes.
+Screenshot and reports get generated and returned to the local machine.
+
+Test Output
+Use ExtentReports or any reporting library.
+Screenshots are returned from the Selenium Grid running on GCP.
+Example failure: mismatch in page title asserted vs actual.
+
+Key Takeaways
+Only Chrome and Firefox are supported with official Selenium Docker images.
+For IE or Safari: run Grid on your own infrastructure or wait for image support.
+Use Docker Compose for easy management and auto-linking of Selenium hub and browser nodes.
+Selenium Grid on GCP + Docker Compose is lightweight and scalable.
+Optional: Use Zalenium or Selenium Grid with Kubernetes for advanced dashboards and orchestration.
+
