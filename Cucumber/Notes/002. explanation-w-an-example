@@ -87,6 +87,19 @@ this will run
 -------
 
 
+****
+what is parameter or argument?
+
+def greet(name):    # 'name' is the **parameter**
+    print(f"Hello, {name}!")
+
+greet("Poojiii")    # "Poojiii" is the **argument**
+name → Parameter (in function definition)
+
+"Poojiii" → Argument (actual value passed when calling the function)
+****
+
+
 step parameter and scenario outline
 
 in the above example we have hard coded the value and now we shall send it as a parameter from the feature file.
@@ -123,20 +136,20 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 
-@given(u'open browser')
+@given('open browser')
 def open_browser(context):
     context.driver = webdriver.Chrome()
     context.driver.get("https://www.skyscanner.net/")
     time.sleep(50)
 
 
-@when(u'providing valid "{username}" and "{password}"')
+@when('providing valid "{username}" and "{password}"')
 def valid_user_password(context,username, password):
     context.driver.find_element(By.XPATH, "//*[@id='originInput-label']").send_keys("london")
     context.driver.find_element(By.XPATH, "//*[@id='destinationInput-input']").send_keys("bangalore")
 
 
-@then(u'verifying homepage')
+@then('verifying homepage')
 def verify_homepage(context):
     assert context.driver.title == "Login: Mercury Tours"
 
@@ -151,6 +164,49 @@ def verify_success(context):
     if text == "login succesful":
        context.driver.close()
        assert True, "Test case pass"
+
+
+
+
+if you were to open the csv file then this would work?
+
+Feature file: Keep it clean, just mention you are passing filename.
+Step definition: Read CSV or TXT file and use the data inside the steps.
+
+
+feature file:
+
+Feature: Login functionality for an application
+
+Scenario: Valid user name and password
+    Given open browser
+    When providing valid username and password from "login_data.csv"
+    Then verifying homepage
+
+
+step defn:
+
+import csv
+
+@given('open browser')
+def step_impl(context):
+    # code to open the browser
+    pass
+
+@when('providing valid username and password from "{filename}"')
+def step_impl(context, filename):
+    with open(f'features/testdata/{filename}', mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            username = row['username']
+            password = row['password']
+            # Code to enter username and password
+            print(f"Logging in with {username} and {password}")
+
+@then('verifying homepage')
+def step_impl(context):
+    # code to verify homepage
+    pass
 
 -------------------------
 
