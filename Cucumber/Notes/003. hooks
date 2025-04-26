@@ -1,0 +1,371 @@
+Goal:
+
+Open the browser before each scenario
+Navigate to the login page
+Login during the scenario
+Logout after each scenario (cleanup)
+
+Folder structure
+
+your_project/
+├── features/
+│   ├── steps/
+│   │   └── login_steps.py
+│   ├── login.feature
+│   └── environment.py
+├── requirements.txt
+
+
+1. Feature file: features/login.feature
+
+Feature: Login functionality
+
+  Background:
+    Given I am on the login page
+
+  Scenario: Successful login
+    When I enter valid username and password
+    Then I should see the homepage
+
+  Scenario: Unsuccessful login
+    When I enter invalid username and password
+    Then I should see an error message
+
+2. Step Definitions: features/steps/login_steps.py
+
+from behave import given, when, then
+
+@given('I am on the login page')
+def step_go_to_login_page(context):
+    context.driver.get("https://example.com/login")  # Example URL
+    print("Navigated to login page.")
+
+@when('I enter valid username and password')
+def step_enter_valid_credentials(context):
+    context.driver.find_element("id", "username").send_keys("valid_user")
+    context.driver.find_element("id", "password").send_keys("valid_pass")
+    context.driver.find_element("id", "loginButton").click()
+    print("Entered valid credentials.")
+
+@then('I should see the homepage')
+def step_verify_homepage(context):
+    assert "Home" in context.driver.title
+    print("Verified homepage.")
+
+@when('I enter invalid username and password')
+def step_enter_invalid_credentials(context):
+    context.driver.find_element("id", "username").send_keys("invalid_user")
+    context.driver.find_element("id", "password").send_keys("invalid_pass")
+    context.driver.find_element("id", "loginButton").click()
+    print("Entered invalid credentials.")
+
+@then('I should see an error message')
+def step_verify_error_message(context):
+    error = context.driver.find_element("id", "errorMessage").text
+    assert "Invalid credentials" in error
+    print("Verified error message.")
+
+
+3. Hooks (Setup + Teardown): features/environment.py
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+import time
+
+def before_scenario(context, scenario):
+    print("\n[Before Scenario] Launching browser and preparing test.")
+    context.driver = webdriver.Chrome()
+    context.driver.maximize_window()
+
+def after_scenario(context, scenario):
+    print("\n[After Scenario] Cleaning up.")
+    try:
+        # Try to logout if possible
+        logout_button = context.driver.find_element(By.ID, "logoutButton")
+        if logout_button.is_displayed():
+            logout_button.click()
+            print("[After Scenario] Logged out successfully.")
+            time.sleep(1)
+    except Exception as e:
+        print(f"[After Scenario] Logout not needed or failed: {e}")
+    
+    context.driver.quit()
+    print("[After Scenario] Browser closed.")
+
+def before_all(context):
+    print("\n[Before All] Starting test session.")
+
+def after_all(context):
+    print("\n[After All] Test session finished.")
+
+How This Works:
+
+When              	   What Happens
+Before all tests	     A welcome message is printed
+Before each scenario	 Chrome browser opens
+Background step	       Navigate to login page
+Step actions	         Enter username/password
+After each scenario	   Try to logout (if possible), then close browser
+After all tests	Print  session completed message
+
+Real Notes:
+before_scenario is opening the browser fresh for every scenario.
+after_scenario checks if the logout button is present — if yes, it clicks logout.
+Whether login succeeds or fails, browser is closed safely after the test.
+before_all and after_all are just for printing — you could extend them to connect to databases, prepare environment, etc.
+
+Imagine Output:
+
+[Before All] Starting test session.
+[Before Scenario] Launching browser and preparing test.
+Navigated to login page.
+Entered valid credentials.
+Verified homepage.
+[After Scenario] Logged out successfully.
+[After Scenario] Browser closed.
+
+[Before Scenario] Launching browser and preparing test.
+Navigated to login page.
+Entered invalid credentials.
+Verified error message.
+[After Scenario] Logout not needed or failed: ...
+[After Scenario] Browser closed.
+
+[After All] Test session finished.
+
+
+Summary for Login Hooks
+
+Hook	            What it Does
+before_scenario	  Open browser
+after_scenario	  Logout (if needed) + close browser
+before_all	      Prepare environment
+after_all	        Clean environment
+
+
+
+HERE IT MAKES SENSE TO HAVE BEFORE SCENARIO TO INITIALISE THE DRIVER AS IT HELPS IN OPENING THE BROWSER BASED ON WHICH ONE YOU WNAT
+AND IN THE BACKGROUND WE CAN ONLY CARE ABOUT NAVIGATION TO THE PAGE? YAYIE IT IS.
+
+
+
+
+More on- Behave hooks and professional testing.
+
+
+
+this is what is gonna be covered!
+
+Topic                                              | What it Means                             | Why it's Useful
+1. Tags to skip login/logout                       | Control which scenarios need login/logout | Saves time for non-login scenarios
+2. Generate HTML Report                            | Get a beautiful test result file          | Easy to share with others
+3. Reuse browser for feature (instead of scenario) | Open browser once per feature             | Faster tests, saves time
+
+
+
+
+
+1. Use Tags to Skip Login/Logout
+
+Imagine some tests don’t need a login (for example, just checking the homepage).
+We can add a tag like @skip_login to those tests.
+
+Feature file: login.feature
+
+Feature: Login functionality
+
+  Scenario: Successful login
+    When I enter valid username and password
+    Then I should see the homepage
+
+  @skip_login
+  Scenario: Access public homepage
+    Given I am on the homepage
+    Then I should see welcome text
+
+Notice that second scenario has @skip_login!
+
+Modify Hooks in environment.py
+
+def before_scenario(context, scenario):
+    print("\n[Before Scenario] Launching browser.")
+    context.driver = webdriver.Chrome()
+    context.driver.maximize_window()
+
+    # Skip login only if tag is NOT there
+    if 'skip_login' not in scenario.tags:
+        print("[Before Scenario] Logging into the application...")
+        context.driver.get("https://example.com/login")
+        context.driver.find_element("id", "username").send_keys("valid_user")
+        context.driver.find_element("id", "password").send_keys("valid_pass")
+        context.driver.find_element("id", "loginButton").click()
+
+def after_scenario(context, scenario):
+    print("\n[After Scenario] Cleaning up.")
+    if 'skip_login' not in scenario.tags:
+        try:
+            logout_button = context.driver.find_element("id", "logoutButton")
+            if logout_button.is_displayed():
+                logout_button.click()
+                print("[After Scenario] Logged out.")
+        except Exception as e:
+            print(f"[After Scenario] Logout failed or not needed: {e}")
+
+    context.driver.quit()
+    print("[After Scenario] Browser closed.")
+
+
+Now what happens?
+
+If the test has @skip_login → it won’t login or logout.
+If no tag → it will login/logout normally.
+Super useful for skipping unnecessary login in public page tests!
+
+
+
+
+
+
+
+2. Reuse browser for the whole feature
+
+Opening and closing browser for every scenario can be slow.
+
+Instead, you can open browser once at start of feature and close it after feature.
+
+Updated environment.py
+
+def before_feature(context, feature):
+    print("\n[Before Feature] Launching browser ONCE for all scenarios.")
+    context.driver = webdriver.Chrome()
+    context.driver.maximize_window()
+
+def after_feature(context, feature):
+    print("\n[After Feature] Closing browser.")
+    context.driver.quit()
+
+def before_scenario(context, scenario):
+    context.driver.get("https://example.com")
+
+def after_scenario(context, scenario):
+    print("\n[After Scenario] Scenario finished.")
+
+
+Now what happens?
+
+Browser opens once for all scenarios inside a feature
+Saves a lot of time if you have 10+ scenarios!
+
+Super Quick Table:
+
+Style	When to use
+before_scenario open browser	Small tests, only a few scenarios
+before_feature open browser	Large tests, 5+ scenarios, save time
+
+
+
+3. Generate HTML Report
+
+Behave can create nice HTML reports when you run it.
+
+You need to:
+Install a plugin
+Run behave with --format and --outfile
+
+Step 1: Install plugin
+pip install behave-html-formatter
+
+Step 2: Run with HTML output
+behave --format html --outfile reports/report.html
+Now inside the reports/ folder, you will have a beautiful report.html you can open in any browser.
+
+
+
+
+4. Reusable Login Helper Function
+
+Instead of repeating the login code everywhere,
+we'll create one helper function and call it anytime we need to login.
+
+Create a new helper file
+Make a new file:
+features/helpers/login_helper.py
+
+# features/helpers/login_helper.py
+
+def login(context, username, password):
+    context.driver.get("https://example.com/login")
+    context.driver.find_element("id", "username").send_keys(username)
+    context.driver.find_element("id", "password").send_keys(password)
+    context.driver.find_element("id", "loginButton").click()
+    print(f"Logged in with username: {username}")
+Simple and clean!
+
+
+Use the helper in environment.py
+Update your before_scenario like this:
+
+from features.helpers.login_helper import login
+
+def before_scenario(context, scenario):
+    print("\n[Before Scenario] Launching browser.")
+    context.driver = webdriver.Chrome()
+    context.driver.maximize_window()
+
+    if 'skip_login' not in scenario.tags:
+        print("[Before Scenario] Logging into the application...")
+        login(context, "valid_user", "valid_pass")  # Reusable function!
+
+Now you have one place to maintain your login logic.
+If tomorrow the login page changes — you only edit login_helper.py — not everywhere!
+
+
+
+5. Update your Step Definition to read from CSV
+
+=>Create a CSV file
+
+Make a file:
+features/testdata/users.csv
+
+username,password
+valid_user1,valid_pass1
+valid_user2,valid_pass2
+invalid_user,invalid_pass
+
+=>Update features/steps/login_steps.py:
+
+import csv
+from behave import given, when, then
+from features.helpers.login_helper import login
+
+@given('I load user credentials from CSV')
+def step_load_credentials(context):
+    context.credentials = []
+    with open('features/testdata/users.csv', mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            context.credentials.append(row)
+    print(f"Loaded {len(context.credentials)} users from CSV.")
+
+@when('I attempt to login with all credentials')
+def step_login_with_all_credentials(context):
+    for cred in context.credentials:
+        username = cred['username']
+        password = cred['password']
+        login(context, username, password)
+
+@then('I should verify login results')
+def step_verify_login_results(context):
+    # Simple check (example only)
+    assert context.driver.title is not None
+    print("Verified login attempts.")
+
+=>Create a Scenario in Feature file
+Update login.feature:
+
+Scenario: Login with multiple users
+  Given I load user credentials from CSV
+  When I attempt to login with all credentials
+  Then I should verify login results
+
