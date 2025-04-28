@@ -369,3 +369,21 @@ Scenario: Login with multiple users
   When I attempt to login with all credentials
   Then I should verify login results
 
+
+
+
+
+
+
+What is environment.py?
+environment.py is a special Behave file.
+It runs before and after your tests.
+You can hook into different phases:
+like before all tests, before each feature, before each scenario, etc.
+
+
+Sometimes you want special setup or special handling based on a tag.
+Example:
+For @api tests, you might skip browser setup.
+For @slow tests, you might change timeout settings.
+For @not_login, you might skip login step.
