@@ -10,7 +10,7 @@ Feature: Login functionality for an application
 
   Scenario: Valid user name and password
     Given open browser
-    When providing valid username and password
+    When providing valid "username" and "password"
     Then verifying homepage
 
 
@@ -40,7 +40,7 @@ def step_impl(context):
     raise NotImplementedError(u'STEP: Given open browser')
 
 
-@when(u'providing valid username and password')
+@when(u'providing valid {username} and {password}')
 def step_impl(context):
     raise NotImplementedError(u'STEP: When providing valid username and password')
 
@@ -208,6 +208,35 @@ def step_impl(context):
     # code to verify homepage
     pass
 
+
+
+why with open()
+with automatically closes the file after the block ends.
+You don't need to call file.close() manually.
+It makes your code safe and cleaner, avoiding file leaks.
+
+If you don't write as file, you would have no easy way to reference the opened file inside the block.
+open('myfile.txt', 'r') opens the file for reading (r = read mode).
+file becomes the object you can use to read content from the file.
+
+file = open('myfile.txt', 'r')
+data = file.read()
+file.close()
+
+open(f'features/testdata/{filename}', mode='r')=>	Open a file dynamically based on filename
+as file	=> Create a file object named file for easy access
+Inside the block=>	You can now do file.read() or file.readline() to get file data
+
+Example without with (not recommended):
+with open('data.txt', 'r'):
+    data = ????
+Now you have no reference to the opened file.
+You can't read from it because you didn't assign it to a variable!
+
+
+IT IS ALL MIXED UP I AM SORRY BUT IM SURE YOU WILL FOLLOW THROUGH IT.
+
+
 -------------------------
 
 
@@ -292,18 +321,54 @@ Step Definition for Table Format
 
 from behave import given, when, then
 
-@when('user enters credentials')
-def enter_credentials(context):
+@given('Given user is on login page')
+def step_admin_login_page_open(context):
+    context.driver.get("https://yourapp.com/admin/login")
+
+
+@when(' user enters credentials')
+def step_admin_provides_credentials(context):
+    context.login_success = []  # Create an empty list to track login success/failures
+    
     for row in context.table:
         username = row['username']
         password = row['password']
-        print(f"Logging in with {username} and {password}")
-        context.driver.find_element(By.NAME, "username").sendKeys(row['username'])
+
+        username_field = context.driver.find_element(By.ID, "username")
+        password_field = context.driver.find_element(By.ID, "password")
+
+        username_field.clear()
+        password_field.clear()
+
+        username_field.send_keys(username)
+        password_field.send_keys(password)
+
+        login_button = context.driver.find_element(By.ID, "loginButton")
+        login_button.click()
+
+        try:
+            dashboard = context.driver.find_element(By.ID, "adminDashboard")
+            if dashboard.is_displayed():
+                context.login_success.append((username, True))
+        except Exception as e:
+            context.login_success.append((username, False))
+
+        # After checking, logout for next user
+        context.driver.find_element(By.ID, "logoutButton").click()
+
+
+@then('admin should be able to login')
+def step_admin_should_be_able_to_login(context):
+    for username, success in context.login_success:
+        assert success, f"Login failed for user: {username}"
+
 
 
 context.table stores the data from the table.
 for row in context.table iterates through each row.
 row['username'] & row['password'] extract data.
+
+
 
 
 
@@ -325,6 +390,11 @@ Table format helps in passing dynamic test data within a scenario.
 It is different from Scenario Outline as it can be used anywhere.
 Step definition uses context.table to access table values.
 Useful for handling varied data sets, API filters, and form validations.
+
+
+What you do	                  What happens
+1 Scenario + 4 data rows	    1 test case runs, 4 internal checks happen
+4 Scenario Outlines           with Examples	4 separate test cases run
 
 
 
