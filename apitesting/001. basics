@@ -1,0 +1,726 @@
+2xx: Success
+Code            	Meaning	           Description
+200  OK	          Success            Standard response for successful GET, POST (with response), PUT, DELETE.
+201  Created	    Resource created	 Typically returned after a successful POST that creates something.
+204  No Content	  Success, no body	 Successful request, but there's no content to return (common with DELETE or PUT).
+
+3xx: Redirection
+Code	                      Meaning	              Description
+301 Moved Permanently	      URL has changed	      Clients should use the new URL provided.
+302 Found	                  Temporary redirect	  The resource temporarily resides under a different URI.
+
+4xx: Client Errors
+Code	              Meaning                   	 Description
+400 Bad Request	    Invalid input	               Client sent invalid or incomplete data.
+401 Unauthorized	  No auth/invalid token	       Authentication is required (e.g., Bearer token missing).
+403 Forbidden	      Access denied	               Authenticated, but not allowed to access the resource.
+404 Not Found	      Resource missing	           The requested resource doesn’t exist.
+
+5xx: Server Errors
+Code	                      Meaning	                        Description
+500 Internal Server Error	  Server blew up	                Generic server failure. Not your fault.
+502 Bad Gateway	            Upstream error	                Server got a bad response from another server.
+503 Service Unavailable	    Server overloaded/down	        The server can’t handle the request right now.
+504 Gateway Timeout	        Server didn’t respond in time	  A timeout from an upstream server.
+
+
+
+Diff between URI and URL:
+All URLs are URIs (because they identify resources).
+Not all URIs are URLs (because URIs could just be a name or identifier without giving directions or protocols).
+
+
+A Real-World Example:
+URI:
+A name tag: "John Doe, employee ID: 12345"
+(This identifies John Doe but doesn't tell you where he is or how to contact him.)
+
+URL:
+John Doe's email address: mailto:johndoe@example.com
+(This not only identifies John Doe but also tells you how to reach him via email.)
+
+
+
+
+
+
+
+
+
+What is API Testing?
+API testing involves sending requests to an API (like a REST API) and validating the responses to ensure the API works correctly.
+
+
+we can achieve this in python using requests module.
+Installing requests
+First, make sure you have the requests library:
+pip install requests
+
+
+
+Basic HTTP Methods using requests
+Here's how to perform common HTTP operations:
+
+1. GET Request (fetching data)
+
+import requests
+
+response = requests.get("https://jsonplaceholder.typicode.com/posts/1")
+print(response.status_code)      # e.g., 200
+print(response.json())           # Parsed JSON response
+
+2. POST Request (creating data)
+
+payload = {
+    "title": "foo",
+    "body": "bar",
+    "userId": 1
+}
+response = requests.post("https://jsonplaceholder.typicode.com/posts", json=payload)
+print(response.status_code)      # e.g., 201
+print(response.json())
+
+
+3. PUT Request (updating data)
+
+payload = {
+    "id": 1,
+    "title": "updated title",
+    "body": "updated body",
+    "userId": 1
+}
+response = requests.put("https://jsonplaceholder.typicode.com/posts/1", json=payload)
+print(response.status_code)      # e.g., 200
+print(response.json())
+
+
+4. DELETE Request (deleting data)
+
+response = requests.delete("https://jsonplaceholder.typicode.com/posts/1")
+print(response.status_code)      # e.g., 200 or 204
+
+
+You can validate the status code like this:
+assert response.status_code == 200
+assert response.json()["userId"] == 1
+
+
+
+
+
+
+
+
+unittestcase framework:
+
+ a simple API test using unittest in Python and the requests library.
+
+Setup: Testing a Public API
+We'll test this free placeholder API:
+https://jsonplaceholder.typicode.com/posts/1
+
+This endpoint returns a JSON object like:
+
+{
+  "userId": 1,
+  "id": 1,
+  "title": "...",
+  "body": "..."
+}
+
+Step-by-Step: API Test with unittest
+
+import unittest
+import requests
+
+class TestAPI(unittest.TestCase):
+
+    def setUp(self):
+        self.base_url = "https://jsonplaceholder.typicode.com/posts/1"
+
+    def test_status_code(self):
+        response = requests.get(self.base_url)
+        self.assertEqual(response.status_code, 200, "Status code is not 200")
+
+    def test_response_body(self):
+        response = requests.get(self.base_url)
+        data = response.json()
+        self.assertIn("userId", data)
+        self.assertIn("title", data)
+        self.assertEqual(data["id"], 1)
+
+    def test_content_type_header(self):
+        response = requests.get(self.base_url)
+        self.assertEqual(response.headers["Content-Type"], "application/json; charset=utf-8")
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+How to Run This
+Save it in a file, say test_api.py, and run:
+
+python test_api.py
+
+You'll see output like:
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.456s
+
+OK
+
+
+
+
+
+
+
+
+
+Testing APIs with headers and tokens (authentication) using a real API that enforces validation.
+
+Step 1: Pick a Realistic API with Auth
+We'll use ReqRes, a free public API that:
+Requires a token for login
+Validates input strictly
+Returns proper status codes (like 400 for bad requests)
+API base: https://reqres.in
+
+Example Flow:
+We’ll test the Login API, which returns a token:
+
+Endpoint: https://reqres.in/api/login
+Method: POST
+Payload:
+{
+  "email": "eve.holt@reqres.in",
+  "password": "cityslicka"
+}
+If the credentials are correct, you get:
+{
+  "token": "QpwL5tke4Pnpja7X4"
+}
+
+Test Login and Use Token in Auth Header
+
+import requests
+
+def test_login_and_use_token():
+    login_url = "https://reqres.in/api/login"
+    protected_url = "https://reqres.in/api/users/2"  # Let's assume this needs auth (just for demo)
+
+    Step 1: Login
+    payload = {
+        "email": "eve.holt@reqres.in",
+        "password": "cityslicka"
+    }
+    response = requests.post(login_url, json=payload)
+    assert response.status_code == 200 //assert response.status_code == 200, f"Login failed. Status code: {response.status_code}, Response: {response.text}" //self.assertEquals(response.status_code,200,'invalid')
+
+
+    token = response.json().get("token")
+    assert token is not None
+
+    Step 2: Use token in Authorization header (for APIs that require it)
+`    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    protected_response = requests.get(protected_url, headers=headers)
+
+    # ReqRes doesn't actually enforce auth, but you can structure the test like this
+    assert protected_response.status_code == 200
+    assert "data" in protected_response.json()
+
+Test Negative Login (Missing Password)
+
+def test_login_missing_password():
+    login_url = "https://reqres.in/api/login"
+    payload = {
+        "email": "eve.holt@reqres.in"
+        # no password
+    }
+    response = requests.post(login_url, json=payload)
+    assert response.status_code == 400
+    assert response.json()["error"] == "Missing password"
+
+You tested a real login flow
+Validated tokens
+Simulated use of Authorization headers
+Covered a negative auth scenario
+
+
+
+Why APIs Use Bearer Tokens:
+It's part of the OAuth 2.0 standard — a common way of securing APIs.
+It's stateless — the token contains all the info needed, so the server doesn’t need to store sessions.
+It allows authorization checks without asking for a password every time
+
+
+
+
+
+
+
+
+
+
+Automatic Retry on Failures (useful for flaky endpoints or temporary errors)
+
+Imagine you hit an API and sometimes get a 500 or 503 temporarily — instead of failing the test immediately, you can retry.
+
+Test with Retry Logic Using tenacity Library
+We'll use the tenacity package to retry failed requests.
+
+Install it:
+
+pip install tenacity
+
+Example: Retry GET Request Until 200
+
+import requests
+from tenacity import retry, stop_after_attempt, wait_fixed
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
+def test_get_with_retry():
+    response = requests.get("https://httpstat.us/503")  # Simulates a 503 error
+    assert response.status_code == 200  # Will retry up to 3 times before failing
+Here:
+
+stop_after_attempt(3) → Retry 3 times max
+wait_fixed(2) → Wait 2 seconds between retries
+
+Real Use: Retry Login if Token Not Returned
+
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
+
+
+
+def test_login_with_retry():
+    login_url = "https://reqres.in/api/login"
+    payload = {
+        "email": "eve.holt@reqres.in",
+        "password": "cityslicka"
+    }
+    response = requests.post(login_url, json=payload)
+    assert response.status_code == 200
+    assert "token" in response.json()
+
+
+
+
+we can also achieve this using try except block
+
+
+import requests
+import time
+
+def test_get_with_retry():
+    max_retries = 3
+    delay = 2
+
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = requests.get("https://httpstat.us/503")
+            if response.status_code == 200:
+                print("Success!")
+                return
+            else:
+                raise Exception(f"Received status code {response.status_code}")
+        except Exception as e:
+            print(f"Attempt {attempt} failed: {e}")
+            if attempt < max_retries:
+                time.sleep(delay)
+            else:
+                raise
+
+test_get_with_retry()
+
+
+
+
+
+.....
+try:
+    raise ValueError("Invalid input")
+except ValueError as e:
+    print("Logging the error:", e)
+    raise  # <-- re-raises the same error
+
+Output:
+Logging the error: Invalid input
+ValueError: Invalid input
+.....
+
+
+Pagination
+APIs that return a list of items often use pagination (e.g., page=1, page=2).
+
+Example with ReqRes:
+Endpoint: https://reqres.in/api/users?page=2
+
+import requests
+
+def test_pagination():
+    url = "https://reqres.in/api/users?page=2"
+    response = requests.get(url)
+    assert response.status_code == 200
+    data = response.json()
+
+    assert "page" in data and data["page"] == 2
+    assert "data" in data and isinstance(data["data"], list)
+
+You can loop through multiple pages like:
+def test_all_pages():
+    for page in range(1, 3):  # example: 2 pages
+        response = requests.get(f"https://reqres.in/api/users?page={page}")
+        assert response.status_code == 200
+        print(f"Page {page} has {len(response.json()['data'])} users")
+
+
+
+
+
+USING PYTEST
+
+
+Folder Structure
+
+api_tests/
+├── conftest.py
+├── test_auth.py
+├── test_users.py
+└── requirements.txt
+
+
+1. conftest.py – Shared Setup for All Tests
+
+import pytest
+
+@pytest.fixture(scope="session")
+def base_url():
+    return "https://reqres.in/api"
+
+@pytest.fixture(scope="session")
+def login_token(base_url):
+    payload = {
+        "email": "eve.holt@reqres.in",
+        "password": "cityslicka"
+    }
+    response = requests.post(f"{base_url}/login", json=payload)
+    assert response.status_code == 200
+    return response.json()["token"]
+
+2. test_auth.py – Auth Tests
+
+import requests
+
+def test_successful_login(base_url):
+    payload = {
+        "email": "eve.holt@reqres.in",
+        "password": "cityslicka"
+    }
+    response = requests.post(f"{base_url}/login", json=payload)
+    assert response.status_code == 200
+    assert "token" in response.json()
+
+def test_failed_login_missing_password(base_url):
+    payload = {
+        "email": "eve.holt@reqres.in"
+    }
+    response = requests.post(f"{base_url}/login", json=payload)
+    assert response.status_code == 400
+    assert "error" in response.json()
+
+# This test reuses the login_token fixture directly
+def test_authenticated_call(login_token, base_url):
+    headers = {
+        "Authorization": f"Bearer {login_token}"
+    }
+    response = requests.get(f"{base_url}/users/2", headers=headers)
+    assert response.status_code == 200
+
+
+def test_with_invalid_token(base_url):
+    headers = {
+        "Authorization": "Bearer invalid.token.value"
+    }
+    response = requests.get(f"{base_url}/users/2", headers=headers)
+    assert response.status_code in (401, 403)
+
+//401 Unauthorized → Token missing or invalid and 403 Forbidden → Token valid but access denied (less common in login tests)
+
+
+3. test_users.py – Pagination & Protected Routes
+
+import requests
+
+def test_user_pagination(base_url):
+    for page in range(1, 3):
+        response = requests.get(f"{base_url}/users?page={page}")
+        assert response.status_code == 200
+        assert "data" in response.json()
+
+def test_access_with_token(base_url, login_token):
+    headers = {"Authorization": f"Bearer {login_token}"}
+    response = requests.get(f"{base_url}/users/2", headers=headers)
+    assert response.status_code == 200
+
+
+requirements.txt
+pytest
+requests
+tenacity
+
+Run the Tests
+From inside the api_tests/ folder, run:
+pytest -v
+
+You'll see output like:
+
+test_auth.py::test_successful_login PASSED
+test_users.py::test_user_pagination PASSED
+...
+
+
+
+
+
+
+
+
+
+what is pytest?
+
+
+1. Installation
+First, you'll need to install pytest, if you haven’t already:
+pip install pytest
+
+2. Basic Structure of a Test
+A pytest test function is simply a Python function that starts with test_. Here's a simple example:
+
+def test_addition():
+    assert 1 + 1 == 2
+The assert statement checks whether the expression is true. If it is, the test passes; otherwise, it fails.
+
+3. Running Tests
+To run the test, navigate to the directory containing the test file and use the command:
+
+pytest
+Pytest will automatically find all files starting with test_ or ending with _test.py, and it will run all functions in those files that start with test_.
+
+4. Test Output
+Once you run pytest, it will show you the result:
+If the test passes, you'll see a . for each passing test.
+If the test fails, it will show F and provide a detailed traceback.
+
+For example:
+$ pytest
+================================ test session starts ================================
+collected 1 item
+
+test_example.py .                                                     [100%]
+
+================================= 1 passed in 0.12 seconds =========================
+
+5. Grouping Tests with Classes
+You can organize your tests into classes, but the class name must start with Test (this is a convention required by pytest).
+
+class TestMathOperations:
+    def test_addition(self):
+        assert 1 + 1 == 2
+    
+    def test_subtraction(self):
+        assert 2 - 1 == 1
+
+6. Fixtures
+Pytest has a concept called fixtures, which are used to set up some state before running tests. For example:
+
+import pytest
+
+@pytest.fixture
+def setup_data():
+    data = [1, 2, 3]
+    return data
+
+def test_sum(setup_data):
+    assert sum(setup_data) == 6
+The setup_data fixture is automatically passed to the test function, which then can use the data.
+
+7. Running Specific Tests
+You can also run a specific test by specifying the file name and the test function:
+
+pytest test_example.py::test_addition
+This will run only the test_addition function in test_example.py.
+
+8. Marking Tests
+Sometimes, you might want to group certain tests and run them separately, for example, "slow" tests or "critical" tests. You can do this using the @pytest.mark decorator.
+
+import pytest
+
+@pytest.mark.slow
+def test_long_running():
+    assert 1 + 1 == 2
+
+You can then run tests with a specific mark like this:
+pytest -m slow
+
+9. Test Parametrization
+You can parametrize a test to run with different inputs. This is useful for testing the same logic with multiple inputs:
+
+import pytest
+
+@pytest.mark.parametrize("a, b, expected", [(1, 2, 3), (2, 3, 5), (4, 5, 9)])
+def test_addition(a, b, expected):
+    assert a + b == expected
+Here, the test will run three times, each time with a different set of parameters
+
+
+
+
+
+Understanding Pytest Fixtures
+
+In pytest, the setup_data function is a fixture, marked by the @pytest.fixture decorator. Pytest uses fixtures to set up some initial state or context
+before running tests. When you define a fixture, pytest automatically knows how to handle it and inject it into your test functions.
+
+Here's a breakdown of what's happening:
+
+Step-by-Step Explanation
+Fixture Declaration: The setup_data function is a fixture defined using the @pytest.fixture decorator:
+
+@pytest.fixture
+def setup_data():
+    data = [1, 2, 3]
+    return data
+When pytest runs the tests, it looks for functions decorated with @pytest.fixture and stores them as "setup" functions.
+
+The setup_data fixture prepares some initial data—in this case, a list [1, 2, 3], which will be used in the test function.
+
+Test Function: In the test_sum function, we mention setup_data as a parameter:
+
+def test_sum(setup_data):
+    assert sum(setup_data) == 6
+
+Pytest's Magic: Pytest automatically recognizes that setup_data is a fixture (because of the @pytest.fixture decorator) 
+and passes the return value of the setup_data fixture ([1, 2, 3]) into the test_sum function.
+
+You don't need to manually call the fixture function in your test. Pytest handles this for you. When pytest runs this test, 
+it will "inject" the value returned by setup_data into the setup_data parameter of test_sum.
+
+Test Execution:
+
+The test_sum function is now executed, and the setup_data variable holds the list [1, 2, 3].
+The test then checks if the sum of this list equals 6 using the assert statement.
+
+How It Works Internally:
+Pytest internally keeps track of all the available fixtures.
+When you pass a fixture as a parameter in your test, pytest looks for a fixture that matches the name (setup_data in this case).
+Pytest calls the setup_data() function and injects the returned value ([1, 2, 3]) into the test function.
+
+Benefits of Fixtures:
+Reusability: You can define a fixture once and reuse it across multiple tests.
+Separation of Concerns: It allows you to keep your test logic clean and separate from setup logic.
+Flexibility: Fixtures can be used for setup (and teardown) of complex resources, like database connections or file handling.
+
+
+
+A Simple Example Comparison
+
+With Pytest:
+
+import pytest
+
+@pytest.fixture
+def setup_data():
+    return [1, 2, 3]
+
+def test_sum(setup_data):
+    assert sum(setup_data) == 6
+
+Without Pytest:
+
+def setup_data():
+    return [1, 2, 3]
+
+def test_sum():
+    setup_data_value = setup_data()
+    assert sum(setup_data_value) == 6
+
+test_sum()  # Manually calling the test
+
+
+
+
+
+1. Pytest Fixtures
+Fixtures are one of the most powerful features of pytest. Here's a deeper look at how to use them effectively.
+
+a. Fixture Scopes
+Fixtures can have different scopes, which determine how often the fixture is invoked. The available scopes are:
+function (default): The fixture is invoked once per test function.
+class: The fixture is invoked once per test class.
+module: The fixture is invoked once per test module (file).
+session: The fixture is invoked once per test session (entire pytest run).
+
+Example of a module-scoped fixture:
+
+import pytest
+
+@pytest.fixture(scope="module")
+def setup_data():
+    return [1, 2, 3]
+
+def test_sum(setup_data):
+    assert sum(setup_data) == 6
+
+def test_length(setup_data):
+    assert len(setup_data) == 3
+In this case, setup_data is created only once for the entire module, and both tests will use it.
+
+
+b. Fixture Finalization (Teardown)
+If you need to clean up or close resources after a test, you can use the finalizer part of a fixture. This is done by using a yield statement.
+
+import pytest
+
+@pytest.fixture
+def setup_data():
+    data = [1, 2, 3]
+    yield data # Teardown code (this runs after the test)
+    print("Teardown: Cleaning up")
+
+def test_sum(setup_data):
+    assert sum(setup_data) == 6
+
+In this example:
+The yield allows you to return data to the test, and after the test runs, the code after yield (cleanup code) is executed.
+
+c. Fixture Dependency
+One fixture can depend on another. Pytest handles this automatically.
+
+import pytest
+
+@pytest.fixture
+def setup_data():
+    return [1, 2, 3]
+
+@pytest.fixture
+def double_data(setup_data):
+    return [x * 2 for x in setup_data]
+
+def test_sum(double_data):
+    assert sum(double_data) == 12
+Here, the double_data fixture depends on setup_data, so pytest will run setup_data first.
+
+
+
+2. Parameterized Tests
+With parametrize, you can run the same test with multiple sets of data.
+
+import pytest
+
+@pytest.mark.parametrize("a, b, expected", [(1, 2, 3), (2, 3, 5), (3, 4, 7)])
+def test_addition(a, b, expected):
+    assert a + b == expected
+This test runs three times, each time with different parameters.
