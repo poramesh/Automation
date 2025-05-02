@@ -4,6 +4,8 @@ EXPLICIT WAIT
 
 An explicit wait makes WebDriver wait for a certain condition to occur before proceeding further with execution. 
 
+WebDriverWait in Selenium uses polling to repeatedly check if a condition is met until a timeout is reached.
+
 
 An explicit wait is a code you define to wait for a certain condition to occur before proceeding further in the code. The extreme case 
 of this is time.sleep(), which sets the condition to an exact time period to wait. There are some convenience methods provided that help
@@ -31,7 +33,7 @@ There are some common conditions that are frequently of use when automating web 
 Python binding provides some convenience methods so you don’t have to code an expected_condition class yourself or 
 create your own utility package for them.
 
-title_is
+title_is , eg: WebDriverWait(driver, 10).until(EC.title_is("My Page Title"))
 title_contains
 presence_of_element_located
 visibility_of_element_located
@@ -81,6 +83,7 @@ class element_has_css_class(object):
 # Wait until an element with id='myNewInput' has class 'myCSSClass'
 wait = WebDriverWait(driver, 10)
 element = wait.until(element_has_css_class((By.ID, 'myNewInput'), "myCSSClass"))
+
 
 
 IMPLICIT WAIT
