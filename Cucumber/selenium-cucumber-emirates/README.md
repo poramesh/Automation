@@ -31,13 +31,13 @@ pip install -r requirements.txt
 selenium-cucumber-python/
 │── features/            
 │   ├── search_flight.feature     
-│── pages/                # Page Object Model (POM) classes
+│── pages/                
 │   ├── base_page.py  
 │   ├── search_page.py   
 │   ├── search_results.py 
 │──steps
 │   ├──search_flight_steps.py
-│── requirements.txt      # Python dependencies
+│── requirements.txt      
 │── README.md 
 ```
 
