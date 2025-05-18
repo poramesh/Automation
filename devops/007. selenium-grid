@@ -99,7 +99,6 @@ For Chrome, you need to download chromedriver.exe and provide its path.
 
 Here’s the command format:
 java -Dwebdriver.chrome.driver=chromedriver.exe -jar selenium-server-standalone-3.14.0.jar -role node -hub http://<HUB_IP>:4444/grid/register
-java -Dwebdriver.chrome.driver=chromedriver.exe -jar selenium-server-standalone-3.14.0.jar -role webdriver -hub http://<HUB_IP>:4444/grid/register
 
 Explanation of each part:
 -Dwebdriver.chrome.driver=... → sets the Chrome driver
@@ -118,14 +117,13 @@ The ChromeDriver version matches your browser
 
 -----
 -role node is used to register a machine as a node in the Selenium Grid, allowing it to receive and run tests from the hub.
--role webdriver is used to run tests via a WebDriver, connecting to the grid hub and executing the tests remotely on a node.
 
 In simpler terms:
 Node registers and listens for tests.
 WebDriver is used to send and execute the tests.
 
 
-java -Dwebdriver.chrome.driver=chromedriver.exe -Dwebdriver.gecko.driver=geckodriver.exe -jar selenium-server-standalone-3.14.0.jar -role webdriver -hub http://<HUB_IP>:4444/grid/register
+java -Dwebdriver.chrome.driver=chromedriver.exe -Dwebdriver.gecko.driver=geckodriver.exe -jar selenium-server-standalone-3.14.0.jar -role node -hub http://<HUB_IP>:4444/grid/register
 In this case, the node will be capable of handling both Chrome and Firefox based on the desired capabilities you specify in your test scripts.
 -------
 
