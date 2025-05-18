@@ -55,3 +55,122 @@ Testing	Done    after dev	             Done alongside dev
 Deployment	    Manual, by Ops	       Automated, frequent
 Collaboration	  Siloed	               Cross-functional teams
 
+
+
+
+
+
+
+How Does CI/CD Work for Production Code?
+
+Here’s a typical flow:
+
+1. Developer Pushes Code
+Code is pushed to a version control system (e.g., GitHub, GitLab, Bitbucket).
+Usually to the main, master, or a release branch.
+2. CI/CD Pipeline Is Triggered
+The push triggers a pipeline (via tools like GitHub Actions, Jenkins, GitLab CI, CircleCI, etc.).
+This is typically done via webhooks from the VCS to the CI/CD tool.
+3. Stages in the Pipeline:
+>Build Stage:
+Code is compiled or packaged (e.g., .jar, .war, Docker image).
+Artifacts are generated.
+>Test Stage:
+Unit Tests: Test individual components.
+Integration Tests: Test how components interact.
+Static Code Analysis: Linting, code quality, security scans.
+End-to-End/Automation Tests (optional): UI or API tests.
+>Staging/Pre-Prod Deployment:
+Deploy the application to a staging environment to mimic production.
+Run additional smoke tests or regression tests.
+>Approval (in Continuous Delivery):
+Human reviews results and approves for production deployment.
+4.Production Deployment (CD)
+>Code is deployed to production using tools like:
+Docker/Kubernetes
+Terraform/CloudFormation
+AWS CodeDeploy, Azure DevOps, etc.
+>Deployment strategies might include:
+Blue/Green Deployment
+Canary Releases
+Rolling Updates
+
+
+
+What Is Tested Before Reaching Production?
+
+| Stage              | Tests Performed                             |
+| ------------------ | ------------------------------------------- |
+| Build              | Syntax checks, dependency resolution        |
+| Unit Test          | Small, fast tests of isolated functions     |
+| Integration Test   | Components working together                 |
+| Linting            | Code style, formatting, basic errors        |
+| Static Analysis    | Security vulnerabilities, code smells       |
+| UI/API Tests       | Simulated user interactions (if configured) |
+| Staging Deployment | Smoke tests, manual exploratory testing     |
+
+
+
+How Does the Build Get Triggered?
+Automatically:
+On every push or merge to a specific branch (main, develop, etc.).
+On a Pull Request being opened or updated.
+
+Manually:
+A user triggers the pipeline from the CI/CD UI (e.g., "Run pipeline" button).
+
+
+
+
+Step-by-Step: Pushing Code from Dev to Staging
+1. Merge dev into staging branch (Git side)
+This is done manually or via Pull/Merge Request.
+
+# Make sure you're on your local dev branch and it's up to date
+git checkout dev
+git pull origin dev
+
+# Switch to staging branch and merge dev into it
+git checkout staging
+git pull origin staging
+git merge dev
+
+# Push the updated staging branch to remote
+git push origin staging
+
+##Some teams create a Pull Request (PR) from dev to staging on platforms like GitHub, GitLab, or Bitbucket to review the changes first.
+
+
+
+
+
+i asked more ques and i got my doubts cleared.
+
+
+the code is deployed to staging via CD (Continuous Delivery/Deployment) — not directly via the merge request itself.
+
+What Actually Deploys Code to Staging?
+1. The merge request (MR/PR):
+Only moves code from one branch to another, e.g., dev → staging.
+It does not deploy the code.
+It triggers deployment only if CI/CD is configured to respond to changes in the target branch (like staging).
+2. CI (Continuous Integration):
+CI builds the app and runs tests when code is pushed.
+Ensures the code is clean, secure, and test-passing.
+CI itself does not deploy — it just prepares and verifies the code.
+
+CD (Continuous Delivery / Deployment):
+>CD is what actually deploys code to the staging environment.
+>It's automatically triggered when:
+A branch like staging is updated (e.g., after a merge request is merged).
+CI has passed successfully.
+>The CD pipeline runs scripts or workflows that:
+Create deployment artifacts (e.g., Docker image)
+Push to staging servers, ECS, Kubernetes, EC2, etc.
+
+Example Flow
+Developer creates a PR from dev → staging.
+The PR is reviewed and merged into the staging branch.
+The push to staging triggers the CI/CD pipeline.
+CI stage runs tests/builds.
+If CI is successful, CD deploys the code to staging.
